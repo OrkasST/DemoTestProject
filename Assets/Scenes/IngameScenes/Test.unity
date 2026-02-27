@@ -469,9 +469,6 @@ MonoBehaviour:
   rb: {fileID: 1437046058}
   move: {fileID: -6086908847384451876, guid: 8d5bce3c582717841b6abd82c728eb5b, type: 3}
   jump: {fileID: 7539494701906875032, guid: 8d5bce3c582717841b6abd82c728eb5b, type: 3}
-  _movementSpeed: 120
-  _movementSpeedAir: 0.25
-  _jumpForce: 300
 --- !u!1 &1596019445
 GameObject:
   m_ObjectHideFlags: 0
