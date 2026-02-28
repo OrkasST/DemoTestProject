@@ -13,7 +13,9 @@ public enum Direction { Left = -1, Right = 1 }
 public class PlayerMovement : MonoBehaviour
 {
     #region Fields Declaration
-    public Rigidbody2D rb;
+    private Rigidbody2D _rb;
+    private Animator _animator;
+
     public InputActionReference move;
     public InputActionReference jump;
     public InputActionReference dash;
@@ -48,6 +50,9 @@ public class PlayerMovement : MonoBehaviour
 
     public void Start()
     {
+        _rb = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
+
         var values = Enum.GetValues(typeof(Actions)).Cast<Actions>();
         foreach (var value in values ) _actionBuffer.Add(value, -1);
         _bufferedActionsKeys = _actionBuffer.Keys.ToArray();
@@ -61,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (!_isInAir && CurrentState != ActorStates.Dashing)
         {
-            rb.linearVelocity = new Vector2(x: direction * _movementSpeed, y: rb.linearVelocity.y);
+            _rb.linearVelocity = new Vector2(x: direction * _movementSpeed, y: _rb.linearVelocity.y);
             ChangeDirection(newDirection);
         }
         else if(_isInAir)
@@ -70,16 +75,24 @@ public class PlayerMovement : MonoBehaviour
             
             ChangeDirection(newDirection);
 
-            if ((direction < 0 && rb.linearVelocity.x > -_movementSpeed) || (direction > 0 && rb.linearVelocity.x < _movementSpeed))
+            if ((direction < 0 && _rb.linearVelocity.x > -_movementSpeed) || (direction > 0 && _rb.linearVelocity.x < _movementSpeed))
             {
                 speedChange = _movementSpeedAir;
             }
 
-            rb.linearVelocity = new Vector2(x: rb.linearVelocity.x + (direction * speedChange), y: rb.linearVelocity.y);
+            _rb.linearVelocity = new Vector2(x: _rb.linearVelocity.x + (direction * speedChange), y: _rb.linearVelocity.y);
         }
 
-        if (rb.linearVelocityX < 0.1f && rb.linearVelocityY > -0.1f && CurrentState == ActorStates.Moving) ChangeState(ActorStates.Standing);
-        if (CurrentState == ActorStates.Standing && (rb.linearVelocityX > 0.1f || rb.linearVelocityY < -0.1f)) ChangeState(ActorStates.Moving);
+        if (_rb.linearVelocityX < 0.1f && _rb.linearVelocityY > -0.1f && CurrentState == ActorStates.Moving)
+        {
+            ChangeState(ActorStates.Standing);
+            _animator.SetBool("isRunning", false);
+        }
+        if (CurrentState == ActorStates.Standing && (_rb.linearVelocityX > 0.1f || _rb.linearVelocityX < -0.1f))
+        {
+            ChangeState(ActorStates.Moving);
+            _animator.SetBool("isRunning", true);
+        }
 
         if (!_isInAir && _coyotTimeCountDown <= 0)
         {
@@ -103,12 +116,14 @@ public class PlayerMovement : MonoBehaviour
         {
             Direction = newDirection;
             Debug.Log(newDirection);
+            if (newDirection == Direction.Left) transform.localScale = Vector3.one;
+            else transform.localScale = new Vector3(-1, 1, 1);
         }
     }
 
     public void FixedUpdate()
     {
-        if (rb.linearVelocity.y < -0.1f && CurrentState != ActorStates.Falling)
+        if (_rb.linearVelocity.y < -0.1f && CurrentState != ActorStates.Falling)
         {
             ChangeState(ActorStates.Falling);
         }
@@ -141,6 +156,7 @@ public class PlayerMovement : MonoBehaviour
         }
         _actionBuffer[Actions.Jump] = -1;
         _isHoldingJump = true;
+        _animator.SetBool("isJumping", true);
         StartCoroutine(JumpHandling());
     }
 
@@ -151,12 +167,12 @@ public class PlayerMovement : MonoBehaviour
         ChangeState(ActorStates.PreparingJump);
         yield return new WaitForSeconds(0.02f);
 
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, _jumpForce);
+        _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _jumpForce);
         ChangeState(ActorStates.Jumping);
         if (!_isHoldingJump || (_actionBuffer[Actions.StopJump] > 0 && Time.time - _actionBuffer[Actions.StopJump] <= _excuseTime))
             StopJump();
 
-        yield return new WaitUntil(() => rb.linearVelocity.y <= 0);
+        yield return new WaitUntil(() => _rb.linearVelocity.y <= 0);
         ChangeState(ActorStates.Falling);
     }
 
@@ -164,8 +180,9 @@ public class PlayerMovement : MonoBehaviour
     {
         _coyotTimeCountDown = _coyotTime;
 
-        ChangeState(rb.linearVelocityX > 0.1f || rb.linearVelocityX < -0.1f ? ActorStates.Moving : ActorStates.Standing);
-
+        ChangeState(_rb.linearVelocityX > 0.1f || _rb.linearVelocityX < -0.1f ? ActorStates.Moving : ActorStates.Standing);
+        _animator.SetBool("isJumping", false);
+        
         if (_actionBuffer[Actions.Jump] > 0f && Time.time - _actionBuffer[Actions.Jump] < _excuseTime) Jump();
         else if (_actionBuffer[Actions.Dash] > 0f && Time.time - _actionBuffer[Actions.Dash] < _excuseTime) Dash();
     }
@@ -192,7 +209,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         _actionBuffer[Actions.StopJump] = -1;
-        rb.linearVelocityY *= ReduceJumpPercent;
+        _rb.linearVelocityY *= ReduceJumpPercent;
     }
 
     private void Dash(InputAction.CallbackContext context) => Dash();
@@ -210,22 +227,22 @@ public class PlayerMovement : MonoBehaviour
     {
         ChangeState(ActorStates.Dashing);
 
-        rb.linearVelocityX = (int)Direction * DashSpeed;
+        _rb.linearVelocityX = (int)Direction * DashSpeed;
 
         yield return new WaitForSeconds(0.2f);
 
-        rb.linearVelocityX = (int)Direction * (DashSpeed * 0.7f);
+        _rb.linearVelocityX = (int)Direction * (DashSpeed * 0.7f);
 
         yield return new WaitForSeconds(0.15f);
 
         if (PreviousState != ActorStates.Moving)
         {
-            rb.linearVelocityX = 0;
+            _rb.linearVelocityX = 0;
             ChangeState(ActorStates.Standing);
         }
         else
         {
-            rb.linearVelocityX = (int)Direction * _movementSpeed;
+            _rb.linearVelocityX = (int)Direction * _movementSpeed;
             ChangeState(ActorStates.Moving);
         }
     }
