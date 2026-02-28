@@ -156,7 +156,6 @@ public class PlayerMovement : MonoBehaviour
         }
         _actionBuffer[Actions.Jump] = -1;
         _isHoldingJump = true;
-        _animator.SetBool("isJumping", true);
         StartCoroutine(JumpHandling());
     }
 
@@ -181,7 +180,6 @@ public class PlayerMovement : MonoBehaviour
         _coyotTimeCountDown = _coyotTime;
 
         ChangeState(_rb.linearVelocityX > 0.1f || _rb.linearVelocityX < -0.1f ? ActorStates.Moving : ActorStates.Standing);
-        _animator.SetBool("isJumping", false);
 
         if (_actionBuffer[Actions.Jump] > 0f && Time.time - _actionBuffer[Actions.Jump] < _excuseTime) Jump();
         else if (_actionBuffer[Actions.Dash] > 0f && Time.time - _actionBuffer[Actions.Dash] < _excuseTime) Dash();
