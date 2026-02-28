@@ -116,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Direction = newDirection;
             Debug.Log(newDirection);
-            if (newDirection == Direction.Left) transform.localScale = Vector3.one;
+            if (newDirection == Direction.Right) transform.localScale = Vector3.one;
             else transform.localScale = new Vector3(-1, 1, 1);
         }
     }
