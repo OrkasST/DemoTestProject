@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0d0f13fce3b31964eb585f5cf985f4c5
+guid: 879d1a5514fb7374a8be72dd0a2670e0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5866680032335761771
-    second: frog_run_4_0
+      213: -3313799753735447042
+    second: frog_jump_1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,8 +49,8 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 9
-  spritePivot: {x: 0.5, y: 0.12}
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: frog_run_4_0
+      name: frog_jump_1_0
       rect:
         serializedVersion: 2
-        x: 122
-        y: 205
-        width: 2370
-        height: 1438
+        x: 300
+        y: 151
+        width: 1952
+        height: 1497
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 59eefb5f79d559ea0800000000000000
-      internalID: -5866680032335761771
+      spriteID: efd52d56ea40302d0800000000000000
+      internalID: -3313799753735447042
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      frog_run_4_0: -5866680032335761771
+      frog_jump_1_0: -3313799753735447042
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
