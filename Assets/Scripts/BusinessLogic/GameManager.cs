@@ -12,7 +12,9 @@ public class GameManager : MonoBehaviour
     #region Scenes Names Declaring
     private readonly string MainMenuScene = "MainMenuScene";
     private readonly string LoadingScene = "LoadingScene";
-    private readonly string IngameSceneArena = "Arena";
+    //private readonly string IngameSceneArena = "Arena";
+    private readonly string IngameSceneArena = "Test";
+
     #endregion
 
     private GameState _currentState = GameState.None;
