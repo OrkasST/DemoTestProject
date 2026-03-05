@@ -1,33 +1,32 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public class Jumping : AbstractAction
 {
-    public Jumping() : base(true, true) { }
+    public Jumping() : base() { }
 
     private float _airMovementSpeed = 7f;
     private float _jumpForce = 320f;
     private const float ReduceJumpPercent = 0.4f;
 
-    private bool _isInAir = false;
-    private bool _isHoldingJump = false;
+    public bool IsInAir { get; private set; }
 
     public void MoveInAir(int direction, float movementSpeed)
     {
         float speedChange = 0;
 
-        if ((direction < 0 && _rb.linearVelocity.x > -movementSpeed) || (direction > 0 && _rb.linearVelocity.x < movementSpeed))
+        if ((direction < 0 && _rb.linearVelocity.x > -movementSpeed*0.7f) || (direction > 0 && _rb.linearVelocity.x < movementSpeed*0.7f))
         {
             speedChange = _airMovementSpeed;
         }
 
         _rb.linearVelocity = new Vector2(x: _rb.linearVelocity.x + (direction * speedChange), y: _rb.linearVelocity.y);
     }
-
     public void Jump()
     {
-        _isHoldingJump = true;
-        Coroutines.StartRoutine(JumpHandling());
+        _animatorController.IsJumping = true;
+        _startRoutine(JumpHandling());
     }
 
     private IEnumerator JumpHandling()
@@ -39,43 +38,44 @@ public class Jumping : AbstractAction
 
         _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _jumpForce);
         _stateMachine.ChangeState(MachineActorStates.Jumping);
-        if (!_isHoldingJump) StopJump();// || (_actionBuffer[Actions.StopJump] > 0 && Time.time - _actionBuffer[Actions.StopJump] <= _excuseTime))
 
         yield return new WaitUntil(() => _rb.linearVelocity.y <= 0);
         _stateMachine.ChangeState(MachineActorStates.Falling);
     }
-    private void StopJump()
+
+    public void StopJump()
     {
-        if (_stateMachine.CurrentState == MachineActorStates.PreparingJump)
-        {
-            _isHoldingJump = false;
-            return;
-        }
-        _rb.linearVelocityY *= ReduceJumpPercent;
+        if (IsInAir && _stateMachine.CurrentState == MachineActorStates.Jumping) _rb.linearVelocityY *= ReduceJumpPercent;
     }
 
-
-    private void Land()
+    public void Land()
     {
+        _animatorController.IsJumping = false;
         _stateMachine.ChangeState(_rb.linearVelocityX > 0.1f || _rb.linearVelocityX < -0.1f ? MachineActorStates.Moving : MachineActorStates.Standing);
-
-        //if (_actionBuffer[Actions.Jump] > 0f && Time.time - _actionBuffer[Actions.Jump] < _excuseTime) Jump();
-        //else if (_actionBuffer[Actions.Dash] > 0f && Time.time - _actionBuffer[Actions.Dash] < _excuseTime) Dash();
     }
+
+    public bool IsFalling() => _rb.linearVelocity.y < -0.1f;
 
     public override void OnActorCollisionEnter(Collision2D collision)
     {
         if (_stateMachine.CurrentState == MachineActorStates.Falling && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            _isInAir = false;
+            IsInAir = false;
             Land();
         }
     }
     public override void OnActorCollisionLeave(Collision2D collision)
     {
-        if (!_isInAir && _stateMachine.CurrentState == MachineActorStates.Jumping && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        if (!IsInAir && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            _isInAir = true;
+            IsInAir = true;
+        }
+    }
+    public override void OnActorCollisionStay(Collision2D collision)
+    {
+        if (IsInAir && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            IsInAir = false;
         }
     }
 }

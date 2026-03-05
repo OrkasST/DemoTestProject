@@ -20,8 +20,8 @@ public class PlayerMovement : MonoBehaviour
     public InputActionReference jump;
     public InputActionReference dash;
 
-    private float _coyotTime = 0.1f;
-    private float _coyotTimeCountDown = 0.1f;
+    private float _coyotTime = 0.2f;
+    private float _coyotTimeCountDown = 0.2f;
 
     private float _excuseTime = 0.25f;
 
@@ -61,7 +61,6 @@ public class PlayerMovement : MonoBehaviour
     public void Update()
     {
         float direction = move.action.ReadValue<float>() > _activationGate ? 1 : move.action.ReadValue<float>() < -_activationGate ? -1 : 0;
-        Debug.Log(direction);
         var newDirection = (Direction)direction;
 
         if (!_isInAir && CurrentState != ActorStates.Dashing)
@@ -97,10 +96,13 @@ public class PlayerMovement : MonoBehaviour
         if (!_isInAir && _coyotTimeCountDown <= 0)
         {
             _coyotTimeCountDown = _coyotTime;
+            Debug.Log("restore");
         }
-        if (_isInAir && CurrentState == ActorStates.Moving && _coyotTimeCountDown > 0)
+        if (_isInAir && _coyotTimeCountDown > 0)
         {
             _coyotTimeCountDown -= Time.deltaTime;
+
+            Debug.Log("decrease Coyote");
         }
 
         foreach (var key in _bufferedActionsKeys)
@@ -115,7 +117,6 @@ public class PlayerMovement : MonoBehaviour
         if (Direction != newDirection)
         {
             Direction = newDirection;
-            Debug.Log(newDirection);
             if (newDirection == Direction.Right) transform.localScale = Vector3.one;
             else transform.localScale = new Vector3(-1, 1, 1);
         }
@@ -139,9 +140,17 @@ public class PlayerMovement : MonoBehaviour
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (!_isInAir && CurrentState == ActorStates.Jumping && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        if (!_isInAir && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
+            Debug.Log("FALLL!");
             _isInAir = true;
+        }
+    }
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (_isInAir && collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            _isInAir = false;
         }
     }
 
@@ -149,7 +158,8 @@ public class PlayerMovement : MonoBehaviour
     private void Jump(InputAction.CallbackContext context) => Jump();
     private void Jump()
     {
-        if ((CurrentState != ActorStates.Standing && CurrentState != ActorStates.Moving) || (_isInAir && _coyotTime <= 0))
+        Debug.Log("_isInAir: " + _isInAir + ", _coyotTime: " + _coyotTimeCountDown);
+        if ((CurrentState != ActorStates.Standing && CurrentState != ActorStates.Moving) && (_isInAir && _coyotTimeCountDown <= 0))
         {
             _actionBuffer[Actions.Jump] = Time.time;
             return;
