@@ -11,6 +11,7 @@ public class PlayerInputController : MonoBehaviour
     public InputActionReference jump;
     public InputActionReference dash;
     public InputActionReference lightAttack;
+    public InputActionReference specialAttack;
 
     private const float _coyotTime = 0.15f;
     private float _coyotTimeCountDown = 0.15f;
@@ -79,14 +80,19 @@ public class PlayerInputController : MonoBehaviour
         jump.action.canceled += StopJump;
 
         dash.action.started += Dash;
+        lightAttack.action.started += LightAttack;
+        specialAttack.action.started += SpecialAttack;
     }
 
     public void OnDisable()
     {
-        jump.action.started -= Jump;
-        jump.action.canceled -= StopJump;
+        //    jump.action.started -= Jump;
+        //    jump.action.canceled -= StopJump;
 
-        dash.action.started -= Dash;
+        //    dash.action.started -= Dash;
+
+        //    lightAttack.action.started -= LightAttack;
+        //    specialAttack.action.started -= SpecialAttack;
     }
 
     private void Dash(InputAction.CallbackContext context) => Dash();
@@ -133,4 +139,7 @@ public class PlayerInputController : MonoBehaviour
             _actorController.StopJump();
         }
     }
+
+    private void SpecialAttack(InputAction.CallbackContext context) => _actorController.CombatController.SpecialAttack();
+    private void LightAttack(InputAction.CallbackContext context) => _actorController.CombatController.LightAttack();
 }

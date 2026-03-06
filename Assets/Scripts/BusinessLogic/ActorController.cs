@@ -26,6 +26,11 @@ public class ActorController : MonoBehaviour
 
     public ActorBattleState GetCurrentBattleState() => _stateMachine.CurrentBattleState;
 
+    public GameObject LightAttackHitbox;
+    public GameObject SpecialAttackHitbox;
+
+    public float AttackSpeed = 170f;
+
     private void Start()
     {
         _animatorController.Initialize(GetComponent<Animator>());
@@ -33,7 +38,7 @@ public class ActorController : MonoBehaviour
         _running.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController);
         _dashing.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController);
 
-        this.CombatController.Initialize(transform.GetChild(0).GetComponent<CapsuleCollider2D>());
+        this.CombatController.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController, LightAttackHitbox, SpecialAttackHitbox, () => Destroy(gameObject), AttackSpeed);
     }
 
     public void Jump(bool? unsafeCanJump = false)

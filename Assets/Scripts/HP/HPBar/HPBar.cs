@@ -4,13 +4,13 @@ using UnityEngine.UI;
 
 public class HPBar : MonoBehaviour
 {
-
+    [SerializeField] private GameObject _entity;
     private CombatController _entityCombatController;
     private Slider _slider;
 
     void Start()
     {
-        _entityCombatController = GetComponent<ActorController>().CombatController;
+        _entityCombatController = _entity.GetComponent<ActorController>().CombatController;
         _slider = GetComponent<Slider>();
 
         _slider.maxValue = _entityCombatController.MaxHp;
