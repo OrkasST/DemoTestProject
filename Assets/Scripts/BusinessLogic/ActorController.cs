@@ -1,6 +1,7 @@
 using Assets.Scripts.Actions.Dashing;
 using Assets.Scripts.Actions.Running;
 using Assets.Scripts.Animator;
+using Assets.Scripts.BusinessLogic;
 using UnityEngine;
 
 public enum ActorActions { Jump, StopJump, Dash }
@@ -17,9 +18,13 @@ public class ActorController : MonoBehaviour
     private ActorStateMachine _stateMachine = new ActorStateMachine();
     private AnimatorController _animatorController = new AnimatorController();
 
+    public CombatController CombatController { get; private set; } = new CombatController();
+
     public bool IsInAir { get => _jumping.IsInAir; }
     public MachineActorStates GetCurrentState() => _stateMachine.CurrentState;
     public MachineActorStates GetPreviousState() => _stateMachine.PreviousState;
+
+    public ActorBattleState GetCurrentBattleState() => _stateMachine.CurrentBattleState;
 
     private void Start()
     {
@@ -27,6 +32,8 @@ public class ActorController : MonoBehaviour
         _jumping.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController);
         _running.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController);
         _dashing.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController);
+
+        this.CombatController.Initialize(transform.GetChild(0).GetComponent<CapsuleCollider2D>());
     }
 
     public void Jump(bool? unsafeCanJump = false)

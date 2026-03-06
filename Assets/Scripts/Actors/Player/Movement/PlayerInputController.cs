@@ -10,6 +10,7 @@ public class PlayerInputController : MonoBehaviour
     public InputActionReference move;
     public InputActionReference jump;
     public InputActionReference dash;
+    public InputActionReference lightAttack;
 
     private const float _coyotTime = 0.15f;
     private float _coyotTimeCountDown = 0.15f;

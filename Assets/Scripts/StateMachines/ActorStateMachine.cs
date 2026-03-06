@@ -1,11 +1,19 @@
 public enum MachineActorStates { Standing, Moving, PreparingJump, Jumping, Falling, Dashing }
 public enum MachineDirection { Left = -1, Right = 1, Stop = 0}
 
+public enum ActorBattleState { Waiting, Attacking, Blocking, Dashing, Interrupted }
+public enum AttackStates { Waiting, Charging, Accelerating, DealingDamage, Recovering, Interrupted, Parred, Blocked }
+public enum BlockStates { Waiting, Preparing, Parrying, Blocking, Recovering, Interrupted }
+
 public class ActorStateMachine
 {
     public MachineActorStates CurrentState { get; private set; } = MachineActorStates.Standing;
     public MachineActorStates PreviousState { get; private set; } = MachineActorStates.Standing;
     public MachineDirection Direction { get; private set; } = MachineDirection.Left;
+
+    public ActorBattleState CurrentBattleState { get; private set; } = ActorBattleState.Waiting;
+    public AttackStates CurrentAttackState { get; private set; } = AttackStates.Waiting;
+    public BlockStates CurrentBlockState { get; private set; } = BlockStates.Waiting;
 
     public int DirectionValue = 0;
 
@@ -40,5 +48,20 @@ public class ActorStateMachine
             return true;
         }
         return false;
+    }
+
+    public void ChangeAttackState(AttackStates newState)
+    {
+        CurrentAttackState = newState;
+        if (newState == AttackStates.Interrupted) CurrentBattleState = ActorBattleState.Interrupted;
+        else if (newState == AttackStates.Waiting) CurrentBattleState = ActorBattleState.Waiting;
+        else CurrentBattleState = ActorBattleState.Attacking;
+    }
+    public void ChangeBlockState(BlockStates newState)
+    {
+        CurrentBlockState = newState;
+        if (newState == BlockStates.Interrupted) CurrentBattleState = ActorBattleState.Interrupted;
+        else if (newState == BlockStates.Waiting) CurrentBattleState = ActorBattleState.Waiting;
+        else CurrentBattleState = ActorBattleState.Blocking;
     }
 }
