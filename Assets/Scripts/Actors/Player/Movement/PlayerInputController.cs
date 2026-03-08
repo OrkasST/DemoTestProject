@@ -12,6 +12,7 @@ public class PlayerInputController : MonoBehaviour
     public InputActionReference dash;
     public InputActionReference lightAttack;
     public InputActionReference specialAttack;
+    public InputActionReference block;
 
     private const float _coyotTime = 0.15f;
     private float _coyotTimeCountDown = 0.15f;
@@ -82,6 +83,9 @@ public class PlayerInputController : MonoBehaviour
         dash.action.started += Dash;
         lightAttack.action.started += LightAttack;
         specialAttack.action.started += SpecialAttack;
+
+        block.action.started += StartBlock;
+        block.action.canceled += EndBlock;
     }
 
     public void OnDisable()
@@ -142,4 +146,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void SpecialAttack(InputAction.CallbackContext context) => _actorController.CombatController.SpecialAttack();
     private void LightAttack(InputAction.CallbackContext context) => _actorController.CombatController.LightAttack();
+
+    private void StartBlock(InputAction.CallbackContext context) => _actorController.CombatController.StartBlock();
+    private void EndBlock(InputAction.CallbackContext context) => _actorController.CombatController.EndBlock();
 }

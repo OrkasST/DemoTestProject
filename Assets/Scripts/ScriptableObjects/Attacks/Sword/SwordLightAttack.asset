@@ -12,10 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 372c886c46eceab4f8435e7b855c063b, type: 3}
   m_Name: SwordLightAttack
   m_EditorClassIdentifier: Assembly-CSharp::AttackData
-  _scale: {x: 0, y: 0, z: 0}
-  _initialPosition: {x: 0, y: 0, z: 0}
-  _initialRotation: {x: 0, y: 0, z: 0, w: 0}
-  _dealingDamagePosition: {x: 0, y: 0, z: 0}
-  _dealingDamageRotation: {x: 0, y: 0, z: 0, w: 0}
-  _endPosition: {x: 0, y: 0, z: 0}
-  _endRotation: {x: 0, y: 0, z: 0, w: 0}
+  InitialScale: {x: 4.3650513, y: 50.927414, z: 1.6894}
+  InitialPosition: {x: 29.7, y: 56.2, z: 0}
+  InitialRotation: {x: 0, y: 0, z: -0.67032945, w: 0.7420636}
+  DealingDamagePosition: {x: 44.4, y: 42.6, z: 0}
+  DealingDamageScale: {x: 4.3650513, y: 50.927414, z: 1.6894}
+  DealingDamageRotation: {x: 0, y: 0, z: 0.67032945, w: -0.74206364}
+  EndPosition: {x: 42.6, y: 10.3, z: 0}
+  EndScale: {x: 4.3650513, y: 50.927414, z: 1.6894}
+  EndRotation: {x: 0, y: 0, z: 0.67032945, w: -0.74206364}
+  ChargingTime: 0
+  AccelerateTime: 0.1
+  DealDamageTime: 0.1
+  RecoveryTime: 0.2
+  Damage: 5

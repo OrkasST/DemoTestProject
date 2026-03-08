@@ -12,10 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 372c886c46eceab4f8435e7b855c063b, type: 3}
   m_Name: SwordSpecialAttack
   m_EditorClassIdentifier: Assembly-CSharp::AttackData
-  _scale: {x: 0, y: 0, z: 0}
-  _initialPosition: {x: 0, y: 0, z: 0}
-  _initialRotation: {x: 0, y: 0, z: 0, w: 0}
-  _dealingDamagePosition: {x: 0, y: 0, z: 0}
-  _dealingDamageRotation: {x: 0, y: 0, z: 0, w: 0}
-  _endPosition: {x: 0, y: 0, z: 0}
-  _endRotation: {x: 0, y: 0, z: 0, w: 0}
+  InitialScale: {x: 32.93789, y: 6.406362, z: 1.6894}
+  InitialPosition: {x: 7.2, y: 25.6, z: 0}
+  InitialRotation: {x: 0, y: 0, z: 0, w: 0}
+  DealingDamagePosition: {x: 10.4, y: 25.6, z: 0}
+  DealingDamageScale: {x: 32.93789, y: 6.406362, z: 1.6894}
+  DealingDamageRotation: {x: 0, y: 0, z: 0, w: 0}
+  EndPosition: {x: 59.4, y: 25.6, z: 0}
+  EndScale: {x: 32.93789, y: 6.406362, z: 1.6894}
+  EndRotation: {x: 0, y: 0, z: 0, w: 0}
+  ChargingTime: 0.5
+  AccelerateTime: 0.1
+  DealDamageTime: 0.2
+  RecoveryTime: 0.5
+  Damage: 7

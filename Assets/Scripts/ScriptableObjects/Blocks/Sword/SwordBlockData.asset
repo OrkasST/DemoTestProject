@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e17949833bee2594fb97246eeb9929be, type: 3}
+  m_Name: SwordBlockData
+  m_EditorClassIdentifier: Assembly-CSharp::BlockData
+  InitialScale: {x: 8.820839, y: 52.88472, z: 1}
+  InitialPosition: {x: 23.2, y: -8, z: 0}
+  InitialRotation: {x: 0, y: 0, z: 0.04327065, w: 0.9990634}
+  ParryngEndPosition: {x: 25.6, y: 27.6, z: 0}
+  ParryngEndScale: {x: 8.820839, y: 52.88472, z: 1}
+  ParryngEndRotation: {x: 0, y: 0, z: 0.04327065, w: 0.9990634}
+  BlockPosition: {x: 25.6, y: 27.6, z: 0}
+  BlockScale: {x: 8.820839, y: 52.88472, z: 1}
+  BlockRotation: {x: 0, y: 0, z: 0.04327065, w: 0.9990634}
+  PreparingTime: 0.1
+  ParryingTime: 0.1
+  BlockMoveTime: 0
+  RecoveryTime: 0.1
+  DamageDecrease: 0.7

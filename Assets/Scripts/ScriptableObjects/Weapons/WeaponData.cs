@@ -5,4 +5,5 @@ public class WeaponData : ScriptableObject
 {
     public AttackData LightAttackData;
     public AttackData SpecialAttackData;
+    public BlockData BlockData;
 }

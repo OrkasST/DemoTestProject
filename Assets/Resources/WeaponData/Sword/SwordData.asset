@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdd65cb89b5bcbd43818ec90b3c27ab4, type: 3}
   m_Name: SwordData
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
-  LightAttackData: {fileID: 0}
-  SpecialAttackData: {fileID: 0}
+  LightAttackData: {fileID: 11400000, guid: b57ce37821087fd488bb161a9b82f1de, type: 2}
+  SpecialAttackData: {fileID: 11400000, guid: 108670eac2aa75a4fbb0b4adeb9cfd20, type: 2}
+  BlockData: {fileID: 11400000, guid: aa2d883051a6164499351e258326d430, type: 2}

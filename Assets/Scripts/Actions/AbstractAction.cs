@@ -10,7 +10,7 @@ public abstract class AbstractAction
     protected Func<IEnumerator, Coroutine> _startRoutine;
     protected AnimatorController _animatorController;
 
-    public void Initialize(ActorStateMachine stateMachine, Rigidbody2D rb, Func<IEnumerator, Coroutine> coroutineStarterFunc, AnimatorController animatorController)
+    public virtual void Initialize(ActorStateMachine stateMachine, Rigidbody2D rb, Func<IEnumerator, Coroutine> coroutineStarterFunc, AnimatorController animatorController)
     {
         _stateMachine = stateMachine;
         _rb = rb;

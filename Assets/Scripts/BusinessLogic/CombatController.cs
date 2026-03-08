@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Actions.Attack;
 using Assets.Scripts.Animator;
+using Assets.Scripts.Weapon;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -11,33 +12,52 @@ namespace Assets.Scripts.BusinessLogic
         public int MaxHp = 100;
         public int CurrentHp = 100;
 
-        //public CapsuleCollider2D _lightAttackCollider;
         public GameObject _lightAttackCollider;
         public GameObject _specialAttackCollider;
+        public GameObject _blockCollider;
 
-        private Attack _attack;
+        //private AttackType _currentAttack = AttackType.Light;
+        public int CurrentAttackDamage { get => 5; }
 
-        private AttackType _currentAttack = AttackType.Light;
-        public int CurrentAttackDamage { get => _attack.Damage[_currentAttack]; }
-
+        private ActorStateMachine _stateMachine;
+        private Rigidbody2D _rb;
+        private AnimatorController _animatorController;
         private Action _destroyAction;
+        private Action<Coroutine> _coroutineCancelFunction;
+        private Func<IEnumerator, Coroutine> _coroutineStarterFunc;
 
-        public void Initialize(ActorStateMachine stateMachine, Rigidbody2D rb, Func<IEnumerator, Coroutine> coroutineStarterFunc, AnimatorController animatorController,
-            GameObject lightAttackCollider, GameObject specialAttackCollider, Action destroy, float attackSpeed)
+        private AbstractWeapon _weapon;
+
+        public void Initialize(ActorStateMachine stateMachine, Rigidbody2D rb, Func<IEnumerator, Coroutine> coroutineStarterFunc, Action<Coroutine> coroutineCancelFunction,
+            AnimatorController animatorController, GameObject lightAttackCollider, GameObject specialAttackCollider, GameObject blockCollider, Action destroy)
         {
+            _stateMachine = stateMachine;
+            _rb = rb;
+            _animatorController = animatorController;
             _lightAttackCollider = lightAttackCollider;
             _specialAttackCollider = specialAttackCollider;
+            _blockCollider = blockCollider;
 
-            _lightAttackCollider.SetActive(false);
-            _specialAttackCollider.SetActive(false);
+            _coroutineStarterFunc = coroutineStarterFunc;
+            _coroutineCancelFunction = coroutineCancelFunction;
 
-            _attack = new Attack(5, 1, 1.2f, _lightAttackCollider, _specialAttackCollider, attackSpeed);
-            _attack.Initialize(stateMachine, rb, coroutineStarterFunc, animatorController);
+            //_lightAttackCollider.SetActive(false);
+            //_specialAttackCollider.SetActive(false);
 
-            _lightAttackCollider.GetComponent<AttackHitbox>().SetDamage(_attack.Damage[AttackType.Light]);
-            _specialAttackCollider.GetComponent<AttackHitbox>().SetDamage(_attack.Damage[AttackType.Special]);
+            //_attack = new Attack();
+            //_attack.Initialize(stateMachine, rb, coroutineStarterFunc, coroutineCancelFunction, animatorController);
+
+            //_lightAttackCollider.GetComponent<AttackHitbox>().SetDamage(5);
+            //_specialAttackCollider.GetComponent<AttackHitbox>().SetDamage(5);
 
             _destroyAction = destroy;
+        }
+
+
+        public void EquipWeapon(AbstractWeapon weapon)
+        {
+            _weapon = weapon;
+            _weapon.Initialize(_lightAttackCollider, _specialAttackCollider, _blockCollider, _coroutineStarterFunc, _coroutineCancelFunction, _stateMachine, _rb, _animatorController);
         }
 
         public void GetDamage(int hp)
@@ -50,8 +70,10 @@ namespace Assets.Scripts.BusinessLogic
             else CurrentHp -= hp;
         }
 
-        public void LightAttack() => _attack.StartAttack(AttackType.Light);
+        public void LightAttack() =>_weapon.Attack(AttackType.Light);
+        public void SpecialAttack() => _weapon.Attack(AttackType.Special);
+        public void StartBlock() => _weapon.StartBlock();
+        public void EndBlock() => _weapon.EndBlock();
 
-        internal void SpecialAttack() => _attack.StartAttack(AttackType.Special);
     }
 }

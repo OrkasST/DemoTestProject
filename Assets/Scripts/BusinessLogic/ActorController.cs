@@ -2,6 +2,7 @@ using Assets.Scripts.Actions.Dashing;
 using Assets.Scripts.Actions.Running;
 using Assets.Scripts.Animator;
 using Assets.Scripts.BusinessLogic;
+using Assets.Scripts.Weapon.Sword;
 using UnityEngine;
 
 public enum ActorActions { Jump, StopJump, Dash }
@@ -21,13 +22,17 @@ public class ActorController : MonoBehaviour
     public CombatController CombatController { get; private set; } = new CombatController();
 
     public bool IsInAir { get => _jumping.IsInAir; }
+    public string ActorName;
+
     public MachineActorStates GetCurrentState() => _stateMachine.CurrentState;
     public MachineActorStates GetPreviousState() => _stateMachine.PreviousState;
 
     public ActorBattleState GetCurrentBattleState() => _stateMachine.CurrentBattleState;
+    public BlockStates GetCurrentBlockState() => _stateMachine.CurrentBlockState;
 
     public GameObject LightAttackHitbox;
     public GameObject SpecialAttackHitbox;
+    public GameObject BlockHitbox;
 
     public float AttackSpeed = 170f;
 
@@ -38,7 +43,10 @@ public class ActorController : MonoBehaviour
         _running.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController);
         _dashing.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController);
 
-        this.CombatController.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController, LightAttackHitbox, SpecialAttackHitbox, () => Destroy(gameObject), AttackSpeed);
+        this.CombatController.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, StopCoroutine, _animatorController,
+            LightAttackHitbox, SpecialAttackHitbox, BlockHitbox, () => Destroy(gameObject));
+
+        this.CombatController.EquipWeapon(new Sword());
     }
 
     public void Jump(bool? unsafeCanJump = false)
@@ -49,13 +57,15 @@ public class ActorController : MonoBehaviour
     public void StopJump() => _jumping.StopJump();
     public bool CanJump()
     {
-        return (_stateMachine.CurrentState == MachineActorStates.Standing || _stateMachine.CurrentState == MachineActorStates.Moving);
+        return (_stateMachine.CurrentState == MachineActorStates.Standing || _stateMachine.CurrentState == MachineActorStates.Moving)
+            && _stateMachine.CurrentBattleState != ActorBattleState.Interrupted;
     }
     public bool CanStopJump() => _stateMachine.CurrentState == MachineActorStates.Jumping;
 
     public bool CanDash()
     {
-        return _stateMachine.CurrentState == MachineActorStates.Standing || _stateMachine.CurrentState == MachineActorStates.Moving;
+        return _stateMachine.CurrentState == MachineActorStates.Standing || _stateMachine.CurrentState == MachineActorStates.Moving
+            && _stateMachine.CurrentBattleState != ActorBattleState.Interrupted; ;
     }
     public void Dash()
     {
@@ -71,6 +81,7 @@ public class ActorController : MonoBehaviour
 
     public void ChangeDirection(MachineDirection direction)
     {
+        if (_stateMachine.CurrentBattleState == ActorBattleState.Interrupted) return;
         if (_stateMachine.CurrentState == MachineActorStates.Dashing) return;
         if (_stateMachine.ChangeDirection(direction))
         {
@@ -80,6 +91,7 @@ public class ActorController : MonoBehaviour
     }//For AI based
     public void ChangeDirection(int direction)
     {
+        if (_stateMachine.CurrentBattleState == ActorBattleState.Interrupted) return;
         if (_stateMachine.CurrentState == MachineActorStates.Dashing) return;
         if (_stateMachine.ChangeDirection(direction))
         {

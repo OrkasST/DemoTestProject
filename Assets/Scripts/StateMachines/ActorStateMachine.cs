@@ -53,7 +53,7 @@ public class ActorStateMachine
     public void ChangeAttackState(AttackStates newState)
     {
         CurrentAttackState = newState;
-        if (newState == AttackStates.Interrupted) CurrentBattleState = ActorBattleState.Interrupted;
+        if (newState == AttackStates.Interrupted || newState == AttackStates.Parred) CurrentBattleState = ActorBattleState.Interrupted;
         else if (newState == AttackStates.Waiting) CurrentBattleState = ActorBattleState.Waiting;
         else CurrentBattleState = ActorBattleState.Attacking;
     }
