@@ -11,23 +11,24 @@ namespace Assets.Scripts.Actions.Block
         private GameObject _hitbox;
 
         private Coroutine _currentBlock;
-        Action<Coroutine> _coroutineCancelFunction;
+        private Action<Coroutine> _coroutineCancelFunction;
+        private Action<BlockStates> _onBlockStateChange;
 
         public float DamageDecrease { get; private set; }
 
         public Block(ActorStateMachine stateMachine, Rigidbody2D rb, Func<IEnumerator, Coroutine> coroutineStarterFunc, Action<Coroutine> coroutineCancelFunction,
-            AnimatorController animatorController, BlockData blockData, GameObject hitbox)
+            AnimatorController animatorController, BlockData blockData, GameObject hitbox, Action<BlockStates> onBlockStateChange)
         {
             Initialize(stateMachine, rb, coroutineStarterFunc, animatorController);
             _blockData = blockData;
             _hitbox = hitbox;
-            //_hitbox.SetActive(false);
 
-            _stateMachine.ChangeBlockState(BlockStates.Blocking);
+            onBlockStateChange(BlockStates.Blocking);
 
             _coroutineCancelFunction = coroutineCancelFunction;
 
             DamageDecrease = _blockData.DamageDecrease;
+            _onBlockStateChange = onBlockStateChange;
         }
 
         public void StartBlock()
@@ -45,14 +46,15 @@ namespace Assets.Scripts.Actions.Block
         {
             _coroutineCancelFunction(_currentBlock);
             _hitbox.SetActive(false);
-            _stateMachine.ChangeBlockState(BlockStates.Interrupted);
+            _onBlockStateChange(BlockStates.Interrupted);
             Debug.Log("Interrupted");
         }
 
         private IEnumerator BlockPreparingHandle()
         {
             #region PreparingState
-            _stateMachine.ChangeBlockState(BlockStates.Preparing);
+            _onBlockStateChange(BlockStates.Preparing);
+
             _hitbox.transform.localPosition = _blockData.InitialPosition;
             _hitbox.transform.localRotation = _blockData.InitialRotation;
             _hitbox.transform.localScale = _blockData.InitialScale;
@@ -62,13 +64,13 @@ namespace Assets.Scripts.Actions.Block
 
             #region ParryingState
             var time = Time.time;
-            _stateMachine.ChangeBlockState(BlockStates.Parrying);
+            _onBlockStateChange(BlockStates.Parrying);
 
             Vector3 movementSpeed = CalculateSpeed(_hitbox.transform, _blockData.ParryngEndPosition, _blockData.ParryingTime);
             _hitbox.SetActive(true);
             while (_hitbox.transform.localPosition != _blockData.ParryngEndPosition && Time.time - time < _blockData.ParryingTime)
             {
-                MoveHitbox(movementSpeed);
+                //MoveHitbox(movementSpeed);
                 yield return null;
             }
             _hitbox.transform.localPosition = _blockData.ParryngEndPosition;
@@ -77,7 +79,8 @@ namespace Assets.Scripts.Actions.Block
             #endregion
 
             #region DelingDamageState
-            _stateMachine.ChangeBlockState(BlockStates.Blocking);
+            _onBlockStateChange(BlockStates.Blocking);
+
             if (_blockData.BlockMoveTime > 0)
             {
                 movementSpeed = CalculateSpeed(_hitbox.transform, _blockData.BlockPosition, _blockData.BlockMoveTime);
@@ -92,15 +95,6 @@ namespace Assets.Scripts.Actions.Block
             }
 
             #endregion
-
-            //#region RecoveryState
-
-            //_hitbox.SetActive(false);
-            //_stateMachine.ChangeBlockState(AttackStates.Recovering);
-            //yield return new WaitForSeconds(_blockData.RecoveryTime);
-            //#endregion
-
-            //_stateMachine.ChangeBlockState(AttackStates.Waiting);
         }
 
         private IEnumerator BlockEndHandle()
@@ -108,7 +102,7 @@ namespace Assets.Scripts.Actions.Block
             #region RecoveryState
 
             _hitbox.SetActive(false);
-            _stateMachine.ChangeBlockState(BlockStates.Recovering);
+            _onBlockStateChange(BlockStates.Recovering);
             yield return new WaitForSeconds(_blockData.RecoveryTime);
             #endregion
 

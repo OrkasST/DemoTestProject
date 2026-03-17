@@ -21,6 +21,8 @@ public class ActorController : MonoBehaviour
 
     public CombatController CombatController { get; private set; } = new CombatController();
 
+    private BoxCollider2D _actorCollider;
+
     public bool IsInAir { get => _jumping.IsInAir; }
     public string ActorName;
 
@@ -29,6 +31,7 @@ public class ActorController : MonoBehaviour
 
     public ActorBattleState GetCurrentBattleState() => _stateMachine.CurrentBattleState;
     public BlockStates GetCurrentBlockState() => _stateMachine.CurrentBlockState;
+    public BoxCollider2D GetActorCollider() => _actorCollider;
 
     public GameObject LightAttackHitbox;
     public GameObject SpecialAttackHitbox;
@@ -43,8 +46,10 @@ public class ActorController : MonoBehaviour
         _running.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController);
         _dashing.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController);
 
+        _actorCollider = GetComponent<BoxCollider2D>();
+
         this.CombatController.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, StopCoroutine, _animatorController,
-            LightAttackHitbox, SpecialAttackHitbox, BlockHitbox, () => Destroy(gameObject));
+            LightAttackHitbox, SpecialAttackHitbox, BlockHitbox, _actorCollider, () => Destroy(gameObject));
 
         this.CombatController.EquipWeapon(new Sword());
     }
@@ -65,11 +70,13 @@ public class ActorController : MonoBehaviour
     public bool CanDash()
     {
         return _stateMachine.CurrentState == MachineActorStates.Standing || _stateMachine.CurrentState == MachineActorStates.Moving
-            && _stateMachine.CurrentBattleState != ActorBattleState.Interrupted; ;
+            && _stateMachine.CurrentBattleState != ActorBattleState.Interrupted &&
+            (_stateMachine.CurrentAttackState == AttackStates.Waiting || _stateMachine.CurrentAttackState == AttackStates.Charging);
     }
     public void Dash()
     {
         if (!CanDash()) return;
+        //if (_stateMachine.CurrentAttackState == AttackStates.Charging) this.CombatController.
         _dashing.Dash(_running.MovementSpeed);
     }
 
@@ -93,6 +100,11 @@ public class ActorController : MonoBehaviour
     {
         if (_stateMachine.CurrentBattleState == ActorBattleState.Interrupted) return;
         if (_stateMachine.CurrentState == MachineActorStates.Dashing) return;
+        if (_stateMachine.CurrentBlockState == BlockStates.Parrying && (MachineDirection)direction == _stateMachine.Direction)
+        {
+            CombatController.Dash(_running.MovementSpeed);
+            return;
+        }
         if (_stateMachine.ChangeDirection(direction))
         {
             if ((MachineDirection)direction == MachineDirection.Right) transform.localScale = Vector3.one;

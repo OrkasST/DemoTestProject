@@ -1,7 +1,9 @@
+using UnityEngine;
+
 public enum MachineActorStates { Standing, Moving, PreparingJump, Jumping, Falling, Dashing }
 public enum MachineDirection { Left = -1, Right = 1, Stop = 0}
 
-public enum ActorBattleState { Waiting, Attacking, Blocking, Dashing, Interrupted }
+public enum ActorBattleState { Waiting, Attacking, Blocking, CanContrattack, Dashing, Interrupted }
 public enum AttackStates { Waiting, Charging, Accelerating, DealingDamage, Recovering, Interrupted, Parred, Blocked }
 public enum BlockStates { Waiting, Preparing, Parrying, Blocking, Recovering, Interrupted }
 
@@ -63,5 +65,10 @@ public class ActorStateMachine
         if (newState == BlockStates.Interrupted) CurrentBattleState = ActorBattleState.Interrupted;
         else if (newState == BlockStates.Waiting) CurrentBattleState = ActorBattleState.Waiting;
         else CurrentBattleState = ActorBattleState.Blocking;
+    }
+
+    public void ChangeBattleState(ActorBattleState newState)
+    {
+        CurrentBattleState = newState;
     }
 }

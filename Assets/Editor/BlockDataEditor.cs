@@ -22,6 +22,7 @@ public class BlockDataEditor : Editor
     SerializedProperty RecoveryTime;
 
     SerializedProperty DamageDecrease;
+    SerializedProperty CanDashOnParry;
 
     bool InitialGroup = false;
     bool ParryingGroup = false;
@@ -49,6 +50,7 @@ public class BlockDataEditor : Editor
         RecoveryTime = serializedObject.FindProperty("RecoveryTime");
 
         DamageDecrease = serializedObject.FindProperty("DamageDecrease");
+        CanDashOnParry = serializedObject.FindProperty("CanDashOnParry");
     }
     public override void OnInspectorGUI()
     {
@@ -93,6 +95,8 @@ public class BlockDataEditor : Editor
 
         EditorGUILayout.Space(10);
         EditorGUILayout.Slider(DamageDecrease, 0, 1f);
+
+        EditorGUILayout.PropertyField(CanDashOnParry);
 
         serializedObject.ApplyModifiedProperties();
     }

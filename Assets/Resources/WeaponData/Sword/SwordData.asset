@@ -15,3 +15,4 @@ MonoBehaviour:
   LightAttackData: {fileID: 11400000, guid: b57ce37821087fd488bb161a9b82f1de, type: 2}
   SpecialAttackData: {fileID: 11400000, guid: 108670eac2aa75a4fbb0b4adeb9cfd20, type: 2}
   BlockData: {fileID: 11400000, guid: aa2d883051a6164499351e258326d430, type: 2}
+  CanDashOnParry: 1

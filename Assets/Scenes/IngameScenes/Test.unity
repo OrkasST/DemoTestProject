@@ -166,7 +166,7 @@ CapsuleCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -276,7 +276,7 @@ GameObject:
   - component: {fileID: 128687070}
   - component: {fileID: 128687069}
   - component: {fileID: 128687068}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Enemy
   m_TagString: Entity
   m_Icon: {fileID: 0}
@@ -298,7 +298,7 @@ MonoBehaviour:
   ActorName: Enemy
   LightAttackHitbox: {fileID: 695075721}
   SpecialAttackHitbox: {fileID: 197060230}
-  BlockHitbox: {fileID: 0}
+  BlockHitbox: {fileID: 897276822}
   AttackSpeed: 170
 --- !u!95 &128687069
 Animator:
@@ -335,7 +335,7 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -485,7 +485,7 @@ GameObject:
   - component: {fileID: 197060233}
   - component: {fileID: 197060232}
   - component: {fileID: 197060231}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpecialAttackHitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -958,7 +958,7 @@ GameObject:
   - component: {fileID: 331859588}
   - component: {fileID: 331859590}
   - component: {fileID: 331859589}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1034,7 +1034,7 @@ GameObject:
   - component: {fileID: 501476722}
   - component: {fileID: 501476721}
   - component: {fileID: 501476720}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1278,7 +1278,7 @@ GameObject:
   - component: {fileID: 695075724}
   - component: {fileID: 695075723}
   - component: {fileID: 695075722}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LightAttackHitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1417,7 +1417,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 815649708}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1455,7 +1455,7 @@ GameObject:
   - component: {fileID: 817743397}
   - component: {fileID: 817743399}
   - component: {fileID: 817743400}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: HP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1696,7 +1696,7 @@ GameObject:
   - component: {fileID: 897276826}
   - component: {fileID: 897276825}
   - component: {fileID: 897276824}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EnemyBlockHitbox
   m_TagString: Block
   m_Icon: {fileID: 0}
@@ -2465,10 +2465,10 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -3026,7 +3026,7 @@ GameObject:
   - component: {fileID: 2055426384}
   - component: {fileID: 2055426386}
   - component: {fileID: 2055426385}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}

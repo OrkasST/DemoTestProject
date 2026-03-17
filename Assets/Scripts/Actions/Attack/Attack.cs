@@ -14,11 +14,12 @@ namespace Assets.Scripts.Actions.Attack
 
         private Coroutine _currentAttack;
         Action<Coroutine> _coroutineCancelFunction;
+        Action<AttackStates> _onAttackStateChangeFunction;
 
         public int Damage { get; private set; }
 
         public Attack(ActorStateMachine stateMachine, Rigidbody2D rb, Func<IEnumerator, Coroutine> coroutineStarterFunc, Action<Coroutine> coroutineCancelFunction,
-            AnimatorController animatorController, AttackData attackData, GameObject hitbox)
+            AnimatorController animatorController, AttackData attackData, GameObject hitbox, Action<AttackStates> onAttackStateChangeFunction)
         {
             Initialize(stateMachine, rb, coroutineStarterFunc, animatorController);
             _attackData = attackData;
@@ -28,6 +29,7 @@ namespace Assets.Scripts.Actions.Attack
 
             Damage = _attackData.Damage;
             _hitbox.GetComponent<AttackHitbox>().SetUp(Damage, ParryAttack, InterruptAttack);
+            _onAttackStateChangeFunction = onAttackStateChangeFunction;
         }
 
         public void StartAttack()
@@ -50,18 +52,19 @@ namespace Assets.Scripts.Actions.Attack
         {
             _coroutineCancelFunction(_currentAttack);
             _hitbox.SetActive(false);
-            _stateMachine.ChangeAttackState(attackState);
+            _onAttackStateChangeFunction(attackState);
 
             if (attackState == AttackStates.Parred) yield return new WaitForSeconds(1.3f);
             else yield return new WaitForSeconds(0.4f);
 
-            _stateMachine.ChangeAttackState(AttackStates.Waiting);
+            _onAttackStateChangeFunction(AttackStates.Waiting);
         }
 
         private IEnumerator AttackHandle()
         {
             #region ChargingState
-            _stateMachine.ChangeAttackState(AttackStates.Charging);
+            _onAttackStateChangeFunction(AttackStates.Charging);
+
             _hitbox.transform.localPosition = _attackData.InitialPosition;
             _hitbox.transform.localRotation = _attackData.InitialRotation;
             _hitbox.transform.localScale = _attackData.InitialScale;
@@ -71,7 +74,8 @@ namespace Assets.Scripts.Actions.Attack
 
             #region AcceleratingState
             var time = Time.time;
-            _stateMachine.ChangeAttackState(AttackStates.Accelerating);
+            _onAttackStateChangeFunction(AttackStates.Accelerating);
+
             Vector3 movementSpeed = CalculateSpeed(_hitbox.transform, _attackData.DealingDamagePosition, _attackData.AccelerateTime);
             _hitbox.SetActive(true);
             while(_hitbox.transform.localPosition != _attackData.DealingDamagePosition && Time.time - time < _attackData.AccelerateTime )
@@ -83,7 +87,8 @@ namespace Assets.Scripts.Actions.Attack
             #endregion
 
             #region DelingDamageState
-            _stateMachine.ChangeAttackState(AttackStates.DealingDamage);
+            _onAttackStateChangeFunction(AttackStates.DealingDamage);
+
             movementSpeed = CalculateSpeed(_hitbox.transform, _attackData.EndPosition, _attackData.DealDamageTime);
 
             time = Time.time;
@@ -98,11 +103,12 @@ namespace Assets.Scripts.Actions.Attack
             #region RecoveryState
 
             _hitbox.SetActive(false);
-            _stateMachine.ChangeAttackState(AttackStates.Recovering);
+            _onAttackStateChangeFunction(AttackStates.Recovering);
+
             yield return new WaitForSeconds(_attackData.RecoveryTime);
             #endregion
 
-            _stateMachine.ChangeAttackState(AttackStates.Waiting);
+            _onAttackStateChangeFunction(AttackStates.Waiting);
         }
 
         protected Vector3 CalculateSpeed(Transform hitboxTransform, Vector3 destination, float time)

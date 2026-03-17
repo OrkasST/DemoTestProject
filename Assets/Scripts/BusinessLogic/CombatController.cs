@@ -27,9 +27,11 @@ namespace Assets.Scripts.BusinessLogic
         private Func<IEnumerator, Coroutine> _coroutineStarterFunc;
 
         private AbstractWeapon _weapon;
+        private AttackType _currentAttackType;
+        private BoxCollider2D _actorCollider;
 
         public void Initialize(ActorStateMachine stateMachine, Rigidbody2D rb, Func<IEnumerator, Coroutine> coroutineStarterFunc, Action<Coroutine> coroutineCancelFunction,
-            AnimatorController animatorController, GameObject lightAttackCollider, GameObject specialAttackCollider, GameObject blockCollider, Action destroy)
+            AnimatorController animatorController, GameObject lightAttackCollider, GameObject specialAttackCollider, GameObject blockCollider, BoxCollider2D actorCollider, Action destroy)
         {
             _stateMachine = stateMachine;
             _rb = rb;
@@ -41,15 +43,7 @@ namespace Assets.Scripts.BusinessLogic
             _coroutineStarterFunc = coroutineStarterFunc;
             _coroutineCancelFunction = coroutineCancelFunction;
 
-            //_lightAttackCollider.SetActive(false);
-            //_specialAttackCollider.SetActive(false);
-
-            //_attack = new Attack();
-            //_attack.Initialize(stateMachine, rb, coroutineStarterFunc, coroutineCancelFunction, animatorController);
-
-            //_lightAttackCollider.GetComponent<AttackHitbox>().SetDamage(5);
-            //_specialAttackCollider.GetComponent<AttackHitbox>().SetDamage(5);
-
+            _actorCollider = actorCollider;
             _destroyAction = destroy;
         }
 
@@ -57,7 +51,22 @@ namespace Assets.Scripts.BusinessLogic
         public void EquipWeapon(AbstractWeapon weapon)
         {
             _weapon = weapon;
-            _weapon.Initialize(_lightAttackCollider, _specialAttackCollider, _blockCollider, _coroutineStarterFunc, _coroutineCancelFunction, _stateMachine, _rb, _animatorController);
+            if (_actorCollider == null) Debug.Log("_actorCollider");
+            _weapon.Initialize(_lightAttackCollider, _specialAttackCollider, _blockCollider, _coroutineStarterFunc, _coroutineCancelFunction,
+                _stateMachine, _rb, _animatorController, OnAttackStateChange, OnBlockStateChange, _actorCollider, _blockCollider.GetComponent<CapsuleCollider2D>());
+        }
+
+        private void OnAttackStateChange(AttackStates state)
+        {
+            _stateMachine.ChangeAttackState(state);
+        }
+        private void OnBlockStateChange(BlockStates state)
+        {
+            _stateMachine.ChangeBlockState(state);
+        }
+        private void OnBattleStateChange(ActorBattleState state)
+        {
+            _stateMachine.ChangeBattleState(state);
         }
 
         public void GetDamage(int hp)
@@ -69,11 +78,20 @@ namespace Assets.Scripts.BusinessLogic
             }
             else CurrentHp -= hp;
         }
-
-        public void LightAttack() =>_weapon.Attack(AttackType.Light);
+        public void InterruptAttack()
+        {
+            //if (_currentAttackType == AttackType.Light) _weapon.
+        }
+        public void LightAttack() {
+            if (_stateMachine.CurrentBattleState == ActorBattleState.CanContrattack)
+                _stateMachine.ChangeDirection(_stateMachine.Direction == MachineDirection.Left ? MachineDirection.Right : MachineDirection.Left);
+            _weapon.Attack(AttackType.Light);
+            }
         public void SpecialAttack() => _weapon.Attack(AttackType.Special);
         public void StartBlock() => _weapon.StartBlock();
         public void EndBlock() => _weapon.EndBlock();
+
+        public void Dash(float movementSpeed) => _weapon.Dash(movementSpeed);
 
     }
 }

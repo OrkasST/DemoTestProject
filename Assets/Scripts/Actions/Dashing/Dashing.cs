@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace Assets.Scripts.Actions.Dashing
@@ -6,22 +7,22 @@ namespace Assets.Scripts.Actions.Dashing
     public class Dashing: AbstractAction
     {
         public float DashSpeed { get; private set; } = 400f;
-        private int _dashDirection = 0;
+        protected int _dashDirection = 0;
 
         public Dashing() : base() { }
 
 
-        public void Dash(float movementSpeed)
+        public virtual void Dash(float movementSpeed)
         {
             _animatorController.IsRunning = true;
             _startRoutine(DashHandle(movementSpeed));
         }
 
-        private IEnumerator DashHandle(float movementSpeed)
+        protected virtual IEnumerator DashHandle(float movementSpeed)
         {
             _stateMachine.ChangeState(MachineActorStates.Dashing);
             _dashDirection = (int)_stateMachine.Direction;
-            Debug.Log(_dashDirection);
+
             _rb.linearVelocityX = _dashDirection * DashSpeed;
 
             yield return new WaitForSeconds(0.2f);
