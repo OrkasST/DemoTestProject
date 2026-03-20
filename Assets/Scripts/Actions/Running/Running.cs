@@ -8,10 +8,13 @@ namespace Assets.Scripts.Actions.Running
         public Running() : base() { }
 
         public float MovementSpeed { get; private set; } = 180f;
+        private float _speedDecrease = 0.5f;
 
         public void Move(int direction)
         {
-            _rb.linearVelocity = new UnityEngine.Vector2(x: direction * MovementSpeed, y: _rb.linearVelocity.y);
+            _rb.linearVelocity = new UnityEngine.Vector2(x: direction * MovementSpeed *
+                (_stateMachine.CurrentBattleState == ActorBattleState.Blocking ? _speedDecrease : 1), y: _rb.linearVelocity.y);
+
             if (_rb.linearVelocityX < 0.1f && _rb.linearVelocityY > -0.1f && _stateMachine.CurrentState == MachineActorStates.Moving)
             {
                 _stateMachine.ChangeState(MachineActorStates.Standing);

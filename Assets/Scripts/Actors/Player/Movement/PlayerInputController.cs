@@ -70,6 +70,11 @@ public class PlayerInputController : MonoBehaviour
                 _actorController.Dash();
                 _actionBuffer[key] = -1;
             }
+            else if (key == ActorActions.Counterattack && _actorController.CombatController.CanCounterAttack && Time.time - _actionBuffer[key] < _excuseTime)
+            {
+                _actorController.CombatController.LightAttack();
+                _actionBuffer[key] = -1;
+            }
 
             if (Time.time - _actionBuffer[key] >= _excuseTime) _actionBuffer[key] = -1;
         }
@@ -145,7 +150,18 @@ public class PlayerInputController : MonoBehaviour
     }
 
     private void SpecialAttack(InputAction.CallbackContext context) => _actorController.CombatController.SpecialAttack();
-    private void LightAttack(InputAction.CallbackContext context) => _actorController.CombatController.LightAttack();
+    private void LightAttack(InputAction.CallbackContext context)
+    {
+        if (_actorController.GetCurrentBattleState() == ActorBattleState.Dashing && !_actorController.CombatController.CanCounterAttack)
+        {
+            _actionBuffer[ActorActions.Counterattack] = Time.time;
+        }
+        else
+        {
+            _actorController.CombatController.LightAttack();
+            _actionBuffer[ActorActions.Counterattack] = -1;
+        }
+    }
 
     private void StartBlock(InputAction.CallbackContext context) => _actorController.CombatController.StartBlock();
     private void EndBlock(InputAction.CallbackContext context) => _actorController.CombatController.EndBlock();

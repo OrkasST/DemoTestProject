@@ -28,7 +28,7 @@ namespace Assets.Scripts.Actions.Attack
             _coroutineCancelFunction = coroutineCancelFunction;
 
             Damage = _attackData.Damage;
-            _hitbox.GetComponent<AttackHitbox>().SetUp(Damage, ParryAttack, InterruptAttack);
+            _hitbox.GetComponent<AttackHitbox>().SetUp(damage: Damage, onParry: ParryAttack, onBlock: InterruptAttack);
             _onAttackStateChangeFunction = onAttackStateChangeFunction;
         }
 

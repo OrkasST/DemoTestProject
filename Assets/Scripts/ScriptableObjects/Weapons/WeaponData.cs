@@ -7,4 +7,6 @@ public class WeaponData : ScriptableObject
     public AttackData SpecialAttackData;
     public BlockData BlockData;
     public bool CanDashOnParry;
+    public bool CanCounterAttack;
+    public bool CanAttackWhileBlocking;
 }

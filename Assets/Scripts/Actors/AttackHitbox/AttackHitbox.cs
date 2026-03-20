@@ -18,23 +18,27 @@ public class AttackHitbox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        Debug.Log("Hit");
         if (collision.tag == "Block")
         {
+            GameObject me = this.gameObject.GetComponentInParent<ActorController>().gameObject;
+            Debug.Log("Block");
             _isblocked = true;
-            Debug.Log(collision.gameObject.GetComponent<BlockHitbox>().GetActorController().ActorName);
-            switch (collision.gameObject.GetComponent<BlockHitbox>().GetBlockState())
+            ActorController actorController = collision.gameObject.GetComponentInParent<ActorController>();
+
+            switch (actorController.GetCurrentBlockState())
             {
-                case BlockStates.Parrying: _onParry(); break;
-                case BlockStates.Blocking: _onBlock(); collision.gameObject.GetComponent<BlockHitbox>().GetActorController().CombatController.GetDamage(_damage); break;
+                case BlockStates.Parrying: _onParry(); 
+                    actorController.CombatController.OnEnemyAttackParred(me.GetComponent<BoxCollider2D>().size.x, me.transform.position); break;
+                case BlockStates.Blocking: _onBlock(); actorController.CombatController.GetDamage(_damage); break;
             }
         }
-        else if (collision.tag == "Entity" && !_isblocked)
+        else if ((collision.tag == "Entity" || collision.tag == "Player") && !_isblocked)
         {
+            Debug.Log("Entity");
             var collisionBattleState = collision.gameObject.GetComponent<ActorController>().GetCurrentBattleState();
 
             collision.gameObject.GetComponent<ActorController>().CombatController.GetDamage(_damage);
-            //Debug.Log(_damage);
-            Debug.Log("Hit");
         }
     }
 
@@ -42,4 +46,6 @@ public class AttackHitbox : MonoBehaviour
     {
         _isblocked = false;
     }
+    private void OnDisable() { _isblocked = false; }
+
 }

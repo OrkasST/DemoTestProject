@@ -7,53 +7,74 @@ public class ParryDashing: Dashing
 {
     private BoxCollider2D _actorCollider;
     private CapsuleCollider2D _blockCollider;
+    private Action<Coroutine> _endRoutine;
+    private Coroutine _currentDash;
 
-    public void SetUp(BoxCollider2D actorCollider, CapsuleCollider2D blockCollider)
+    public void SetUp(BoxCollider2D actorCollider, CapsuleCollider2D blockCollider, Action<Coroutine> endCoroutineFunc)
     {
         _actorCollider = actorCollider;
         _blockCollider = blockCollider;
+        _endRoutine = endCoroutineFunc;
     }
 
-    public override void Dash(float movementSpeed)
+    public void Dash(float movementSpeed, Vector3 dashDistance)
     {
         _animatorController.IsRunning = true;
-        _startRoutine(DashHandle(movementSpeed, _actorCollider, _blockCollider));
+        _currentDash = _startRoutine(DashHandle(movementSpeed, _actorCollider, _blockCollider, dashDistance));
     }
     
-    protected IEnumerator DashHandle(float movementSpeed, BoxCollider2D actorCollider, CapsuleCollider2D blockCollider)
+    protected IEnumerator DashHandle(float movementSpeed, BoxCollider2D actorCollider, CapsuleCollider2D blockCollider, Vector3 dashFinalPoint)
     {
-        Debug.Log("Value 1: "+ _actorCollider.excludeLayers.value);
+        float startTime = Time.time;
 
         _actorCollider.excludeLayers = 128;
         _blockCollider.excludeLayers = 128;
-        Debug.Log("Value 2: " + _actorCollider.excludeLayers.value);
 
         _stateMachine.ChangeState(MachineActorStates.Dashing);
-        _stateMachine.ChangeBattleState(ActorBattleState.CanContrattack);
+        _stateMachine.ChangeBattleState(ActorBattleState.Dashing);
         _dashDirection = (int)_stateMachine.Direction;
-        Debug.Log(_dashDirection);
         _rb.linearVelocityX = _dashDirection * DashSpeed;
 
-        yield return new WaitForSeconds(0.2f);
+
+        yield return new WaitUntil(() => IsDistanceOver(dashFinalPoint));
+
         _rb.linearVelocityX = _dashDirection * (DashSpeed * 0.7f);
-        //_stateMachine.ChangeBattleState(ActorBattleState.Dashing);
+        _stateMachine.ChangeBattleState(ActorBattleState.CanContrattack);
 
         yield return new WaitForSeconds(0.15f);
-        if (_stateMachine.PreviousState != MachineActorStates.Moving)
-        {
-            _rb.linearVelocityX = 0;
-            _stateMachine.ChangeState(MachineActorStates.Standing);
-            _stateMachine.ChangeBattleState(ActorBattleState.Waiting);
-            _animatorController.IsRunning = false;
-        }
-        else
-        {
-            _rb.linearVelocityX = _dashDirection * movementSpeed;
-            _stateMachine.ChangeState(MachineActorStates.Moving);
-            _stateMachine.ChangeBattleState(ActorBattleState.Waiting);  
-        }
+        if (_stateMachine.PreviousState != MachineActorStates.Moving) ExitIntoStanding();
+        else ExitIntoMoving(movementSpeed);
+    }
 
-        //_actorCollider.excludeLayers = 0;
-        //_blockCollider.excludeLayers = 0;
+    public void FinishDash()
+    {
+        _stateMachine.ChangeBattleState(ActorBattleState.Waiting);
+        _actorCollider.excludeLayers = 0;
+        _blockCollider.excludeLayers = 0;
+    }
+
+    private bool IsDistanceOver(Vector3 finalPoint)
+    {
+        if (_stateMachine.Direction == MachineDirection.Left && _actorCollider.transform.position.x <= finalPoint.x) return true;
+        if (_stateMachine.Direction == MachineDirection.Right && _actorCollider.transform.position.x >= finalPoint.x) return true;
+        return false;
+    }
+
+    public void Interrupt()
+    {
+        _endRoutine(_currentDash);
+    }
+    public void ExitIntoStanding()
+    {
+        _rb.linearVelocityX = 0;
+        _stateMachine.ChangeState(MachineActorStates.Standing);
+        _animatorController.IsRunning = false;
+        FinishDash();
+    }
+    public void ExitIntoMoving(float movementSpeed)
+    {
+        _rb.linearVelocityX = _dashDirection * movementSpeed;
+        _stateMachine.ChangeState(MachineActorStates.Moving);
+        FinishDash();
     }
 }

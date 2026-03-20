@@ -20,6 +20,8 @@ public class HPBar : MonoBehaviour
     void Update()
     {
         if (_entityCombatController.CurrentHp != _slider.value)
+        {
             _slider.value = _entityCombatController.CurrentHp;
+        }
     }
 }

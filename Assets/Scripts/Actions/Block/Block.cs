@@ -15,6 +15,7 @@ namespace Assets.Scripts.Actions.Block
         private Action<BlockStates> _onBlockStateChange;
 
         public float DamageDecrease { get; private set; }
+        public float BlockingStartTime { get; private set; }
 
         public Block(ActorStateMachine stateMachine, Rigidbody2D rb, Func<IEnumerator, Coroutine> coroutineStarterFunc, Action<Coroutine> coroutineCancelFunction,
             AnimatorController animatorController, BlockData blockData, GameObject hitbox, Action<BlockStates> onBlockStateChange)
@@ -22,8 +23,9 @@ namespace Assets.Scripts.Actions.Block
             Initialize(stateMachine, rb, coroutineStarterFunc, animatorController);
             _blockData = blockData;
             _hitbox = hitbox;
+            _hitbox.SetActive(false);
 
-            onBlockStateChange(BlockStates.Blocking);
+            //onBlockStateChange(BlockStates.Blocking);
 
             _coroutineCancelFunction = coroutineCancelFunction;
 
@@ -66,9 +68,9 @@ namespace Assets.Scripts.Actions.Block
             var time = Time.time;
             _onBlockStateChange(BlockStates.Parrying);
 
-            Vector3 movementSpeed = CalculateSpeed(_hitbox.transform, _blockData.ParryngEndPosition, _blockData.ParryingTime);
+            Vector3 movementSpeed = CalculateSpeed(_hitbox.transform, _blockData.ParryngEndPosition, _blockData.ParryingMoveTime);
             _hitbox.SetActive(true);
-            while (_hitbox.transform.localPosition != _blockData.ParryngEndPosition && Time.time - time < _blockData.ParryingTime)
+            while (_hitbox.transform.localPosition != _blockData.ParryngEndPosition && Time.time - time < _blockData.ParryingMoveTime)
             {
                 //MoveHitbox(movementSpeed);
                 yield return null;
@@ -80,6 +82,7 @@ namespace Assets.Scripts.Actions.Block
 
             #region DelingDamageState
             _onBlockStateChange(BlockStates.Blocking);
+            BlockingStartTime = Time.time;
 
             if (_blockData.BlockMoveTime > 0)
             {
@@ -105,7 +108,6 @@ namespace Assets.Scripts.Actions.Block
             _onBlockStateChange(BlockStates.Recovering);
             yield return new WaitForSeconds(_blockData.RecoveryTime);
             #endregion
-
             _stateMachine.ChangeBlockState(BlockStates.Waiting);
         }
 

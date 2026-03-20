@@ -17,12 +17,12 @@ public class BlockDataEditor : Editor
     SerializedProperty BlockRotation;
 
     SerializedProperty PreparingTime;
+    SerializedProperty ParryingMoveTime;
     SerializedProperty ParryingTime;
     SerializedProperty BlockMoveTime;
     SerializedProperty RecoveryTime;
 
     SerializedProperty DamageDecrease;
-    SerializedProperty CanDashOnParry;
 
     bool InitialGroup = false;
     bool ParryingGroup = false;
@@ -45,12 +45,12 @@ public class BlockDataEditor : Editor
         BlockRotation = serializedObject.FindProperty("BlockRotation");
 
         PreparingTime = serializedObject.FindProperty("PreparingTime");
+        ParryingMoveTime = serializedObject.FindProperty("ParryingMoveTime");
         ParryingTime = serializedObject.FindProperty("ParryingTime");
         BlockMoveTime = serializedObject.FindProperty("BlockMoveTime");
         RecoveryTime = serializedObject.FindProperty("RecoveryTime");
 
         DamageDecrease = serializedObject.FindProperty("DamageDecrease");
-        CanDashOnParry = serializedObject.FindProperty("CanDashOnParry");
     }
     public override void OnInspectorGUI()
     {
@@ -87,6 +87,7 @@ public class BlockDataEditor : Editor
         if (TimingsGroup)
         {
             EditorGUILayout.PropertyField(PreparingTime);
+            EditorGUILayout.PropertyField(ParryingMoveTime);
             EditorGUILayout.PropertyField(ParryingTime);
             EditorGUILayout.PropertyField(BlockMoveTime);
             EditorGUILayout.PropertyField(RecoveryTime);
@@ -95,8 +96,6 @@ public class BlockDataEditor : Editor
 
         EditorGUILayout.Space(10);
         EditorGUILayout.Slider(DamageDecrease, 0, 1f);
-
-        EditorGUILayout.PropertyField(CanDashOnParry);
 
         serializedObject.ApplyModifiedProperties();
     }

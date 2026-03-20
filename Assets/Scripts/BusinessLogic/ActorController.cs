@@ -5,7 +5,7 @@ using Assets.Scripts.BusinessLogic;
 using Assets.Scripts.Weapon.Sword;
 using UnityEngine;
 
-public enum ActorActions { Jump, StopJump, Dash }
+public enum ActorActions { Jump, StopJump, Dash, Counterattack }
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Rigidbody2D))]
@@ -18,6 +18,10 @@ public class ActorController : MonoBehaviour
 
     private ActorStateMachine _stateMachine = new ActorStateMachine();
     private AnimatorController _animatorController = new AnimatorController();
+
+    private string _cs = "";
+    private string _bs = "";
+    private string _bbs = "";
 
     public CombatController CombatController { get; private set; } = new CombatController();
 
@@ -49,7 +53,7 @@ public class ActorController : MonoBehaviour
         _actorCollider = GetComponent<BoxCollider2D>();
 
         this.CombatController.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, StopCoroutine, _animatorController,
-            LightAttackHitbox, SpecialAttackHitbox, BlockHitbox, _actorCollider, () => Destroy(gameObject));
+            LightAttackHitbox, SpecialAttackHitbox, BlockHitbox, _actorCollider, () => Destroy(gameObject), ChangeDirection);
 
         this.CombatController.EquipWeapon(new Sword());
     }
@@ -86,10 +90,10 @@ public class ActorController : MonoBehaviour
         else if (IsInAir) _jumping.MoveInAir(_stateMachine.DirectionValue, _running.MovementSpeed);
     }
 
-    public void ChangeDirection(MachineDirection direction)
+    public void ChangeDirection(MachineDirection direction, bool? isAbsolute = false)
     {
         if (_stateMachine.CurrentBattleState == ActorBattleState.Interrupted) return;
-        if (_stateMachine.CurrentState == MachineActorStates.Dashing) return;
+        if (_stateMachine.CurrentState == MachineActorStates.Dashing && !isAbsolute.Value) return;
         if (_stateMachine.ChangeDirection(direction))
         {
             if (direction == MachineDirection.Right) transform.localScale = Vector3.one;
@@ -132,5 +136,15 @@ public class ActorController : MonoBehaviour
     private void OnCollisionStay2D(Collision2D collision)
     {
         _jumping.OnActorCollisionStay(collision);
+    }
+
+
+    private void Update()
+    {
+        _cs = _stateMachine.CurrentState.ToString();
+        _bs = _stateMachine.CurrentBattleState.ToString();
+        _bbs = _stateMachine.CurrentBlockState.ToString();
+
+        this.CombatController.Update();
     }
 }

@@ -79,7 +79,7 @@
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Gamepad",
                     "action": "jump",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -123,7 +123,7 @@
                     "path": "<Gamepad>/leftStick/x",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Gamepad",
                     "action": "move",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -163,6 +163,17 @@
                 },
                 {
                     "name": "",
+                    "id": "fef38dab-9bd0-487b-bbac-5adb1f9daa0b",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "lightAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "07533c98-6fee-432b-8d81-2a371b3ca72e",
                     "path": "<Keyboard>/q",
                     "interactions": "",
@@ -189,7 +200,7 @@
                     "path": "<Keyboard>/tab",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard",
                     "action": "block",
                     "isComposite": false,
                     "isPartOfComposite": false

@@ -16,6 +16,7 @@ public class BlockData : ScriptableObject
     public Quaternion BlockRotation;
 
     public float PreparingTime;
+    public float ParryingMoveTime;
     public float ParryingTime;
     public float BlockMoveTime;
     public float RecoveryTime;

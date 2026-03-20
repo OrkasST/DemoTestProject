@@ -3,7 +3,7 @@ using UnityEngine;
 public enum MachineActorStates { Standing, Moving, PreparingJump, Jumping, Falling, Dashing }
 public enum MachineDirection { Left = -1, Right = 1, Stop = 0}
 
-public enum ActorBattleState { Waiting, Attacking, Blocking, CanContrattack, Dashing, Interrupted }
+public enum ActorBattleState { Waiting, Attacking, Blocking, CanContrattack, Dashing, DashingFinal, Interrupted }
 public enum AttackStates { Waiting, Charging, Accelerating, DealingDamage, Recovering, Interrupted, Parred, Blocked }
 public enum BlockStates { Waiting, Preparing, Parrying, Blocking, Recovering, Interrupted }
 
@@ -40,6 +40,7 @@ public class ActorStateMachine
     }
     public bool ChangeDirection(MachineDirection newDirection)
     {
+        if (CurrentBattleState == ActorBattleState.CanContrattack) Debug.Log(newDirection);
         if (newDirection == Direction) return false;
 
         DirectionValue = (int)newDirection;

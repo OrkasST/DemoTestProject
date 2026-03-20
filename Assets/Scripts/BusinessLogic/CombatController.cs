@@ -30,8 +30,13 @@ namespace Assets.Scripts.BusinessLogic
         private AttackType _currentAttackType;
         private BoxCollider2D _actorCollider;
 
+        private Action<MachineDirection, bool?> _directionChangeFunction;
+        private bool _isOutOfBlock = false;
+        private bool _hasParredEnemyAttack = false;
+
         public void Initialize(ActorStateMachine stateMachine, Rigidbody2D rb, Func<IEnumerator, Coroutine> coroutineStarterFunc, Action<Coroutine> coroutineCancelFunction,
-            AnimatorController animatorController, GameObject lightAttackCollider, GameObject specialAttackCollider, GameObject blockCollider, BoxCollider2D actorCollider, Action destroy)
+            AnimatorController animatorController, GameObject lightAttackCollider, GameObject specialAttackCollider, GameObject blockCollider, BoxCollider2D actorCollider, Action destroy,
+            Action<MachineDirection, bool?> directionChangeFunction)
         {
             _stateMachine = stateMachine;
             _rb = rb;
@@ -45,6 +50,8 @@ namespace Assets.Scripts.BusinessLogic
 
             _actorCollider = actorCollider;
             _destroyAction = destroy;
+
+            _directionChangeFunction = directionChangeFunction;
         }
 
 
@@ -82,16 +89,56 @@ namespace Assets.Scripts.BusinessLogic
         {
             //if (_currentAttackType == AttackType.Light) _weapon.
         }
-        public void LightAttack() {
-            if (_stateMachine.CurrentBattleState == ActorBattleState.CanContrattack)
-                _stateMachine.ChangeDirection(_stateMachine.Direction == MachineDirection.Left ? MachineDirection.Right : MachineDirection.Left);
-            _weapon.Attack(AttackType.Light);
+
+        public bool CanCounterAttack => _stateMachine.CurrentBattleState == ActorBattleState.CanContrattack;
+        public void LightAttack()
+        {
+            if (CanCounterAttack)
+            {
+                Debug.Log("CounterAttack!");
+                _weapon.Counterattack(_directionChangeFunction, _stateMachine.Direction);
+                return;
             }
+            _weapon.Attack(AttackType.Light);
+        }
         public void SpecialAttack() => _weapon.Attack(AttackType.Special);
-        public void StartBlock() => _weapon.StartBlock();
-        public void EndBlock() => _weapon.EndBlock();
+        public void StartBlock()
+        {
+            _isOutOfBlock = false;
+            _hasParredEnemyAttack = false;
+            _weapon.StartBlock();
+        }
+        public void EndBlock()
+        {
+            _isOutOfBlock = true;
+            _weapon.EndBlock();
+        }
 
-        public void Dash(float movementSpeed) => _weapon.Dash(movementSpeed);
+        public void OnEnemyAttackParred(float enemyWidth, Vector3 enemyPosition)
+        {
+            _hasParredEnemyAttack = true;
+            _weapon.PrepareDash(enemyWidth, enemyPosition, _actorCollider.transform.position, _actorCollider.size.x, (int)_stateMachine.Direction);
+        }
 
+        public void Dash(float movementSpeed)
+        {
+            if (!_hasParredEnemyAttack) return;
+
+            _weapon.InterruptBlock();
+            _stateMachine.ChangeBlockState(BlockStates.Waiting);
+            _weapon.Dash(movementSpeed);
+        }
+
+
+        public void Update()
+        {
+            if (_isOutOfBlock && _stateMachine.CurrentBlockState == BlockStates.Blocking && _weapon.CanRemoveBlock())
+            {
+                _isOutOfBlock = false;
+                _weapon.InterruptBlock();
+                _stateMachine.ChangeBlockState(BlockStates.Blocking);
+                _weapon.EndBlock();
+            }
+        }
     }
 }

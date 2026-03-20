@@ -8,7 +8,11 @@ public abstract class AbstractAction
     protected ActorStateMachine _stateMachine;
     protected Rigidbody2D _rb;
     protected Func<IEnumerator, Coroutine> _startRoutine;
+    protected Action<Coroutine> _endRoutineFunc;
     protected AnimatorController _animatorController;
+
+    protected Coroutine _currentRoutine;
+
 
     public virtual void Initialize(ActorStateMachine stateMachine, Rigidbody2D rb, Func<IEnumerator, Coroutine> coroutineStarterFunc, AnimatorController animatorController)
     {
@@ -22,4 +26,8 @@ public abstract class AbstractAction
     public virtual void OnActorCollisionLeave(Collision2D collision) { }
     public virtual void OnActorCollisionStay(Collision2D collision) { }
 
+    public virtual void CancelCurrentAction()
+    {
+        _endRoutineFunc(_currentRoutine);
+    }
 }
