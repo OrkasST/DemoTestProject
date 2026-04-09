@@ -106,4 +106,6 @@ public class LevelManager : MonoBehaviour
     }
 
     public void QuitGame() => _isGameQuiting = true;
+
+    //Tetst Merge commit change
 }
