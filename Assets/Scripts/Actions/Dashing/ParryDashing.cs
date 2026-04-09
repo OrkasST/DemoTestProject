@@ -19,7 +19,7 @@ public class ParryDashing: Dashing
 
     public void Dash(float movementSpeed, Vector3 dashDistance)
     {
-        _animatorController.IsRunning = true;
+        _animatorController.Blend = 1;
         _currentDash = _startRoutine(DashHandle(movementSpeed, _actorCollider, _blockCollider, dashDistance));
     }
     
@@ -68,7 +68,7 @@ public class ParryDashing: Dashing
     {
         _rb.linearVelocityX = 0;
         _stateMachine.ChangeState(MachineActorStates.Standing);
-        _animatorController.IsRunning = false;
+        _animatorController.Blend = 0;
         FinishDash();
     }
     public void ExitIntoMoving(float movementSpeed)

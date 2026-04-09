@@ -11,6 +11,7 @@ namespace Assets.Scripts.Actions.Attack
     {
         private AttackData _attackData;
         private GameObject _hitbox;
+        private int _attackIndex;
 
         private Coroutine _currentAttack;
         Action<Coroutine> _coroutineCancelFunction;
@@ -18,7 +19,7 @@ namespace Assets.Scripts.Actions.Attack
 
         public int Damage { get; private set; }
 
-        public Attack(ActorStateMachine stateMachine, Rigidbody2D rb, Func<IEnumerator, Coroutine> coroutineStarterFunc, Action<Coroutine> coroutineCancelFunction,
+        public Attack(ActorStateMachine stateMachine, Rigidbody2D rb, int attackIndex, Func<IEnumerator, Coroutine> coroutineStarterFunc, Action<Coroutine> coroutineCancelFunction,
             AnimatorController animatorController, AttackData attackData, GameObject hitbox, Action<AttackStates> onAttackStateChangeFunction)
         {
             Initialize(stateMachine, rb, coroutineStarterFunc, animatorController);
@@ -26,6 +27,8 @@ namespace Assets.Scripts.Actions.Attack
             _hitbox = hitbox;
             _hitbox.SetActive(false);
             _coroutineCancelFunction = coroutineCancelFunction;
+
+            _attackIndex = attackIndex;
 
             Damage = _attackData.Damage;
             _hitbox.GetComponent<AttackHitbox>().SetUp(damage: Damage, onParry: ParryAttack, onBlock: InterruptAttack);
@@ -54,6 +57,8 @@ namespace Assets.Scripts.Actions.Attack
             _hitbox.SetActive(false);
             _onAttackStateChangeFunction(attackState);
 
+            _animatorController.AttackIndex = 0;
+
             if (attackState == AttackStates.Parred) yield return new WaitForSeconds(1.3f);
             else yield return new WaitForSeconds(0.4f);
 
@@ -64,6 +69,8 @@ namespace Assets.Scripts.Actions.Attack
         {
             #region ChargingState
             _onAttackStateChangeFunction(AttackStates.Charging);
+
+            _animatorController.AttackIndex = _attackIndex;
 
             _hitbox.transform.localPosition = _attackData.InitialPosition;
             _hitbox.transform.localRotation = _attackData.InitialRotation;
@@ -109,6 +116,7 @@ namespace Assets.Scripts.Actions.Attack
             #endregion
 
             _onAttackStateChangeFunction(AttackStates.Waiting);
+            _animatorController.AttackIndex = 0;
         }
 
         protected Vector3 CalculateSpeed(Transform hitboxTransform, Vector3 destination, float time)

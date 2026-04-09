@@ -44,7 +44,8 @@ public class DUMM : MonoBehaviour
         startTime = Time.time;
         isProgrammEnded = false;
         _controller.ChangeDirection(MachineDirection.Right);
-        yield return new WaitUntil(() => (transform.position.x >= _initialPosition.x + 140) || (Time.time - startTime >= 3000));
+
+        yield return new WaitUntil(() => (transform.position.x >= _initialPosition.x + 140) || (Time.time - startTime >= 3));
         startTime = Time.time;
         _controller.ChangeDirection(MachineDirection.Stop);
         yield return new WaitForSeconds(0.3f);
@@ -53,7 +54,7 @@ public class DUMM : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
 
         _controller.ChangeDirection(MachineDirection.Left);
-        yield return new WaitUntil(() => (transform.position.x <= _initialPosition.x) || (Time.time - startTime >= 3000));
+        yield return new WaitUntil(() => (transform.position.x <= _initialPosition.x) || (Time.time - startTime >= 3));
         _controller.ChangeDirection(MachineDirection.Stop);
         yield return new WaitForSeconds(0.3f);
         _controller.CombatController.LightAttack();

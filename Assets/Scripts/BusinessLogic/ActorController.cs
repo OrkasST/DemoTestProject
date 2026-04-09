@@ -72,6 +72,9 @@ public class ActorController : MonoBehaviour
     public void Jump(bool? unsafeCanJump = false)
     {
         if (!CanJump() && !unsafeCanJump.Value) return;
+        Debug.Log("Jump (ActorController)");
+        if (_animatorController.Animator == null) Debug.Log("Animator Is Null (ActorController)");
+        if (GetComponent<Animator>() == null) Debug.Log("Animator Is Null (ActorController -- getComponent)");
         _jumping.Jump();
     }
     public void StopJump() => _jumping.StopJump();
@@ -202,6 +205,8 @@ public class ActorController : MonoBehaviour
         _cs = _stateMachine.CurrentState.ToString();
         _bs = _stateMachine.CurrentBattleState.ToString();
         _bbs = _stateMachine.CurrentBlockState.ToString();
+
+        if (_animatorController.Animator == null) { Debug.Log("Animator == null in Update (ActorController"); }
 
         this.CombatController.Update();
     }

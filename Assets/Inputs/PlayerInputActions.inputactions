@@ -174,11 +174,33 @@
                 },
                 {
                     "name": "",
+                    "id": "6bf79f46-6959-451e-a9ec-50e3e62b03fd",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "lightAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "07533c98-6fee-432b-8d81-2a371b3ca72e",
                     "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard",
+                    "action": "specialAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d44005f6-5c3b-46ec-b5c8-2e8a5ffa0e08",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
                     "action": "specialAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -201,6 +223,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard",
+                    "action": "block",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6f739007-c695-42ea-9e8a-743f9b4c36d1",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
                     "action": "block",
                     "isComposite": false,
                     "isPartOfComposite": false

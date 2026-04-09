@@ -45,8 +45,8 @@ namespace Assets.Scripts.Weapon
 
             _stateMachine = stateMachine;
 
-            _lightAttack = new Attack(stateMachine, rb, routineStarter, routineCanceler, animatorController, _weaponData.LightAttackData, lightAttackHitbox, onAttackStateChange);
-            _specialAttack = new Attack(stateMachine, rb, routineStarter, routineCanceler, animatorController, _weaponData.SpecialAttackData, specialAttackHitbox, onAttackStateChange);
+            _lightAttack = new Attack(stateMachine, rb, 1, routineStarter, routineCanceler, animatorController, _weaponData.LightAttackData, lightAttackHitbox, onAttackStateChange);
+            _specialAttack = new Attack(stateMachine, rb, 2, routineStarter, routineCanceler, animatorController, _weaponData.SpecialAttackData, specialAttackHitbox, onAttackStateChange);
             _block = new Block(stateMachine, rb, routineStarter, routineCanceler, animatorController, _weaponData.BlockData, blockHitbox, onBlockStateChange);
 
             if (_weaponData.CanDashOnParry)

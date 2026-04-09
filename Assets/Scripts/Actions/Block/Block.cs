@@ -56,6 +56,8 @@ namespace Assets.Scripts.Actions.Block
             #region PreparingState
             _onBlockStateChange(BlockStates.Preparing);
 
+            _animatorController.IsBlocking = true;
+
             _hitbox.transform.localPosition = _blockData.InitialPosition;
             _hitbox.transform.localRotation = _blockData.InitialRotation;
             _hitbox.transform.localScale = _blockData.InitialScale;
@@ -108,6 +110,7 @@ namespace Assets.Scripts.Actions.Block
             yield return new WaitForSeconds(_blockData.RecoveryTime);
             #endregion
             _stateMachine.ChangeBlockState(BlockStates.Waiting);
+            _animatorController.IsBlocking = false;
         }
 
         protected Vector3 CalculateSpeed(Transform hitboxTransform, Vector3 destination, float time)

@@ -21,14 +21,14 @@ namespace Assets.Scripts.Actions.Running
                 if (_animatorController.Animator == null) Debug.Log("Animator NULL");
 
                 _stateMachine.ChangeState(MachineActorStates.Standing);
-                _animatorController.IsRunning = false;
+                _animatorController.Blend = 0;
             }
             if (_stateMachine.CurrentState == MachineActorStates.Standing && (_rb.linearVelocityX > 0.1f || _rb.linearVelocityX < -0.1f))
             {
                 _stateMachine.ChangeState(MachineActorStates.Moving);
-                _animatorController.IsRunning = true;
+                _animatorController.Blend = 1;
             }
-            if (_stateMachine.CurrentState == MachineActorStates.Standing && _animatorController.IsRunning) _animatorController.IsRunning = false;
+            if (_stateMachine.CurrentState == MachineActorStates.Standing && _animatorController.Blend == 1) _animatorController.Blend = 0;
         }
     }
 }

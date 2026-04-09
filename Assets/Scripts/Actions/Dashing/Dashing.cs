@@ -14,7 +14,7 @@ namespace Assets.Scripts.Actions.Dashing
 
         public virtual void Dash(float movementSpeed)
         {
-            _animatorController.IsRunning = true;
+            _animatorController.Blend = 1;
             _startRoutine(DashHandle(movementSpeed));
         }
 
@@ -33,7 +33,7 @@ namespace Assets.Scripts.Actions.Dashing
             {
                 _rb.linearVelocityX = 0;
                 _stateMachine.ChangeState(MachineActorStates.Standing);
-                _animatorController.IsRunning = false;
+                _animatorController.Blend = 0;
             }
             else
             {

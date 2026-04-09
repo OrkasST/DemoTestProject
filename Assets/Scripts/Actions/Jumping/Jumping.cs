@@ -24,8 +24,9 @@ public class Jumping : AbstractAction
     }
     public void Jump()
     {
-        if (_animatorController == null) Debug.Log("AnController NULL");
-        if (_animatorController.Animator == null) Debug.Log("Animator NULL");
+        Debug.Log("JUmp");
+        if (_animatorController == null) Debug.Log("AnController NULL (Jumping)");
+        if (_animatorController.Animator == null) Debug.Log("Animator NULL (Jumping)");
         _animatorController.IsJumping = true;
         _startRoutine(JumpHandling());
     }
@@ -42,6 +43,9 @@ public class Jumping : AbstractAction
 
         yield return new WaitUntil(() => _rb.linearVelocity.y <= 0);
         _stateMachine.ChangeState(MachineActorStates.Falling);
+
+        _animatorController.IsJumping = false;
+        _animatorController.IsFalling = true;
     }
 
     public void StopJump()
@@ -54,7 +58,7 @@ public class Jumping : AbstractAction
 
     public void Land()
     {
-        _animatorController.IsJumping = false;
+        _animatorController.IsFalling = false;
         _stateMachine.ChangeState(_rb.linearVelocityX > 0.1f || _rb.linearVelocityX < -0.1f ? MachineActorStates.Moving : MachineActorStates.Standing);
     }
 

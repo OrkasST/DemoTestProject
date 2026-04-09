@@ -95,13 +95,16 @@ public class PlayerInputController : MonoBehaviour
 
     public void OnDisable()
     {
-        //    jump.action.started -= Jump;
-        //    jump.action.canceled -= StopJump;
+        jump.action.started -= Jump;
+        jump.action.canceled -= StopJump;
 
-        //    dash.action.started -= Dash;
+        dash.action.started -= Dash;
 
-        //    lightAttack.action.started -= LightAttack;
-        //    specialAttack.action.started -= SpecialAttack;
+        lightAttack.action.started -= LightAttack;
+        specialAttack.action.started -= SpecialAttack;
+
+        block.action.started -= StartBlock;
+        block.action.canceled -= EndBlock;
     }
 
     private void Dash(InputAction.CallbackContext context) => Dash();
