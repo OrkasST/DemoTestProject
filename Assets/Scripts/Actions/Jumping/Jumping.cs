@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -25,6 +24,8 @@ public class Jumping : AbstractAction
     }
     public void Jump()
     {
+        if (_animatorController == null) Debug.Log("AnController NULL");
+        if (_animatorController.Animator == null) Debug.Log("Animator NULL");
         _animatorController.IsJumping = true;
         _startRoutine(JumpHandling());
     }
@@ -45,7 +46,10 @@ public class Jumping : AbstractAction
 
     public void StopJump()
     {
-        if (IsInAir && _stateMachine.CurrentState == MachineActorStates.Jumping) _rb.linearVelocityY *= ReduceJumpPercent;
+        if (IsInAir && _stateMachine.CurrentState == MachineActorStates.Jumping)
+        {
+            _rb.linearVelocityY *= ReduceJumpPercent;
+        }
     }
 
     public void Land()

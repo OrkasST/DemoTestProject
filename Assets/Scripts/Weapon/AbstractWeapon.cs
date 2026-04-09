@@ -68,7 +68,6 @@ namespace Assets.Scripts.Weapon
         }
         public virtual void Counterattack(Action<MachineDirection, bool?> changeDirectionFunc, MachineDirection direction)
         {
-            Debug.Log("COUNTEERATTACK");
             if (!_weaponData.CanCounterAttack) return;
             _parryDash.Interrupt();
             _parryDash.ExitIntoStanding();

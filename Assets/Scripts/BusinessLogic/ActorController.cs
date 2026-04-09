@@ -3,6 +3,9 @@ using Assets.Scripts.Actions.Running;
 using Assets.Scripts.Animator;
 using Assets.Scripts.BusinessLogic;
 using Assets.Scripts.Weapon.Sword;
+using System;
+using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public enum ActorActions { Jump, StopJump, Dash, Counterattack }
@@ -43,9 +46,17 @@ public class ActorController : MonoBehaviour
 
     public float AttackSpeed = 170f;
 
+    public bool IsDead { get; private set; } = false;
+    public Action OnDeath = () => { };
+
     private void Start()
     {
+        //Debug.Log("Start Actor " + gameObject.name);
+
         _animatorController.Initialize(GetComponent<Animator>());
+        //Debug.Log(GetComponent<Animator>());
+        //Debug.Log(_animatorController.Animator);
+
         _jumping.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController);
         _running.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController);
         _dashing.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, _animatorController);
@@ -53,7 +64,7 @@ public class ActorController : MonoBehaviour
         _actorCollider = GetComponent<BoxCollider2D>();
 
         this.CombatController.Initialize(_stateMachine, GetComponent<Rigidbody2D>(), StartCoroutine, StopCoroutine, _animatorController,
-            LightAttackHitbox, SpecialAttackHitbox, BlockHitbox, _actorCollider, () => Destroy(gameObject), ChangeDirection);
+            LightAttackHitbox, SpecialAttackHitbox, BlockHitbox, _actorCollider, Die, ChangeDirection);
 
         this.CombatController.EquipWeapon(new Sword());
     }
@@ -69,7 +80,10 @@ public class ActorController : MonoBehaviour
         return (_stateMachine.CurrentState == MachineActorStates.Standing || _stateMachine.CurrentState == MachineActorStates.Moving)
             && _stateMachine.CurrentBattleState != ActorBattleState.Interrupted;
     }
-    public bool CanStopJump() => _stateMachine.CurrentState == MachineActorStates.Jumping;
+    public bool CanStopJump()
+    {
+        return _stateMachine.CurrentState == MachineActorStates.Jumping;
+    }
 
     public bool CanDash()
     {
@@ -96,8 +110,22 @@ public class ActorController : MonoBehaviour
         if (_stateMachine.CurrentState == MachineActorStates.Dashing && !isAbsolute.Value) return;
         if (_stateMachine.ChangeDirection(direction))
         {
-            if (direction == MachineDirection.Right) transform.localScale = Vector3.one;
-            else transform.localScale = new Vector3(-1, 1, 1);
+            if (direction == MachineDirection.Right)
+            {
+                transform.localScale = Vector3.one;
+                if (gameObject.GetComponentInChildren<Canvas>() != null)
+                {
+                    transform.GetChild(0).localScale = Vector3.one;
+                }
+            }
+            else
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+                if (gameObject.GetComponentInChildren<Canvas>() != null)
+                {
+                    transform.GetChild(0).localScale = new Vector3(-1, 1, 1);
+                }
+            }
         }
     }//For AI based
     public void ChangeDirection(int direction)
@@ -111,8 +139,24 @@ public class ActorController : MonoBehaviour
         }
         if (_stateMachine.ChangeDirection(direction))
         {
-            if ((MachineDirection)direction == MachineDirection.Right) transform.localScale = Vector3.one;
-            else transform.localScale = new Vector3(-1, 1, 1);
+            if ((MachineDirection)direction == MachineDirection.Right)
+            {
+                transform.localScale = Vector3.one; 
+                if (gameObject.GetComponentInChildren<Canvas>() != null)
+                {
+                    Debug.Log("Rot");
+                    transform.GetChild(0).localScale = new Vector3(-1, 1, 1);
+                }
+            }
+            else
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+
+                if (gameObject.GetComponentInChildren<Canvas>() != null)
+                {
+                    transform.GetChild(0).localScale = Vector3.one;
+                }
+            }
         }
     }//For input based
 
@@ -138,6 +182,20 @@ public class ActorController : MonoBehaviour
         _jumping.OnActorCollisionStay(collision);
     }
 
+    async private void Die()
+    {
+        await Death();
+    }
+
+    private async Task Death()
+    {
+        gameObject.SetActive(false);
+        var particle = Instantiate(Resources.Load("Prefabs/Particle System"), transform.position, transform.rotation);
+        await Task.Delay(4000);
+        IsDead = true;
+        OnDeath();
+        Destroy(particle);
+    }
 
     private void Update()
     {
@@ -146,5 +204,19 @@ public class ActorController : MonoBehaviour
         _bbs = _stateMachine.CurrentBlockState.ToString();
 
         this.CombatController.Update();
+    }
+
+    public void Restore()
+    {
+        IsDead = false;
+        _stateMachine.ChangeState(MachineActorStates.Standing);
+        _stateMachine.ChangeState(MachineActorStates.Standing);
+
+        CombatController.Restore();
+    }
+
+    private void OnDestroy()
+    {
+        Debug.Log("Destoy");
     }
 }

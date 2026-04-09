@@ -22,7 +22,7 @@ MonoBehaviour:
   EndScale: {x: 4.3650513, y: 50.927414, z: 1.6894}
   EndRotation: {x: 0, y: 0, z: 0.67032945, w: -0.74206364}
   ChargingTime: 0
-  AccelerateTime: 0.1
-  DealDamageTime: 0.1
+  AccelerateTime: 0.02
+  DealDamageTime: 0.08
   RecoveryTime: 0.2
-  Damage: 5
+  Damage: 100

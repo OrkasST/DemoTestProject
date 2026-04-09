@@ -55,7 +55,7 @@ public class PlayerInputController : MonoBehaviour
 
         foreach (var key in _bufferedActionsKeys)
         {
-            if (key == ActorActions.StopJump && _actorController.CanStopJump() && Time.time - _actionBuffer[key] < _excuseTime)
+            if (key == ActorActions.StopJump && _actionBuffer[key] != -1 && _actorController.CanStopJump())
             {
                 _actorController.StopJump();
                 _actionBuffer[key] = -1;
@@ -76,7 +76,7 @@ public class PlayerInputController : MonoBehaviour
                 _actionBuffer[key] = -1;
             }
 
-            if (Time.time - _actionBuffer[key] >= _excuseTime) _actionBuffer[key] = -1;
+            if (Time.time - _actionBuffer[key] >= _excuseTime && key != ActorActions.StopJump) _actionBuffer[key] = -1;
         }
     }
 

@@ -1,11 +1,13 @@
-using Mono.Cecil.Cil;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public enum GameState { None, InMainMenu, InGame, Loading }
+public enum SceneState { Loading, Loaded, Unloading, Unloaded }
 
 public class GameManager : MonoBehaviour
 {
@@ -15,6 +17,12 @@ public class GameManager : MonoBehaviour
     //private readonly string IngameSceneArena = "Arena";
     private readonly string IngameSceneArena = "Test";
 
+    private Dictionary<string, SceneState> _loadState = new Dictionary<string, SceneState>
+    {
+        ["MainMenuScene"] = SceneState.Unloaded,
+        ["LoadingScene"] = SceneState.Unloaded,
+        ["Test"] = SceneState.Unloaded
+    };
     #endregion
 
     private GameState _currentState = GameState.None;
@@ -52,13 +60,19 @@ public class GameManager : MonoBehaviour
     {
         if (_currentState == GameState.Loading) yield return null;
         _isStateCanBeChanged = false;
-        if (_currentSceneName != "") SceneManager.UnloadSceneAsync(_currentSceneName);
 
+        if (!_currentSceneName.Equals("")) UnloadAwaiter(SceneManager.UnloadSceneAsync(_currentSceneName), _currentSceneName);
+        if (_loadState[sceneName] == SceneState.Unloading)
+        {
+            yield return new WaitUntil(() => _loadState[sceneName] == SceneState.Unloaded);
+        }
+
+        _loadState[sceneName] = SceneState.Loading;
         yield return StartCoroutine(StartLoadingScene());
 
         var loader = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
-        if (!loader.isDone)
+        while (!loader.isDone)
         {
             _progressControler.UpdateProgress(loader.progress);
             yield return null;
@@ -68,6 +82,7 @@ public class GameManager : MonoBehaviour
 
         _progressControler.UpdateProgress(loader.progress);
         _currentSceneName = sceneName;
+        _loadState[sceneName] = SceneState.Loaded;
         StopLoadingScene();
 
         CheckScene();
@@ -75,7 +90,6 @@ public class GameManager : MonoBehaviour
 
     private void CheckScene()
     {
-        Debug.Log(_currentState);
         if (_currentState == GameState.InMainMenu)
         {
             var objects = SceneManager.GetSceneByName(MainMenuScene).GetRootGameObjects();
@@ -84,6 +98,19 @@ public class GameManager : MonoBehaviour
                 if (objects[i].name == "MenuCanvas")
                 {
                     objects[i].GetComponent<GameLoader>().OnClick = () => { OnGameStart(); };
+                    break;
+                }
+            }
+        }
+        else if (_currentState == GameState.InGame)
+        {
+            var objects = SceneManager.GetSceneByName(IngameSceneArena).GetRootGameObjects();
+            for (int i = 0; i < objects.Length; i++)
+            {
+                if (objects[i].name == "Level")
+                {
+                    objects[i].GetComponent<LevelManager>().BackToMainMenu = () => { OnGameEnd(); };
+                    objects[i].GetComponent<LevelManager>().Initialize(IngameSceneArena);
                     break;
                 }
             }
@@ -123,5 +150,18 @@ public class GameManager : MonoBehaviour
     {
         _nextState = GameState.InGame;
         _isStateCanBeChanged = true;
+    }
+    public void OnGameEnd()
+    {
+        _nextState = GameState.InMainMenu;
+        _isStateCanBeChanged = true;
+    }
+
+    async public void UnloadAwaiter(AsyncOperation unloadingSceneOperation, string sceneName)
+    {
+        _loadState[sceneName] = SceneState.Unloading;
+        await unloadingSceneOperation;
+        Debug.Log($"{sceneName}: {unloadingSceneOperation.isDone}");
+        _loadState[sceneName] = SceneState.Unloaded;
     }
 }

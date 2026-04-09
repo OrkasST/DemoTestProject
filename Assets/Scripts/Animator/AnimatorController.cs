@@ -3,6 +3,7 @@
     public class AnimatorController
     {
         private UnityEngine.Animator _animator;
+        public UnityEngine.Animator Animator { get { return _animator; } }
 
         public bool IsRunning
         {

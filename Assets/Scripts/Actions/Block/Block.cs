@@ -49,7 +49,6 @@ namespace Assets.Scripts.Actions.Block
             _coroutineCancelFunction(_currentBlock);
             _hitbox.SetActive(false);
             _onBlockStateChange(BlockStates.Interrupted);
-            Debug.Log("Interrupted");
         }
 
         private IEnumerator BlockPreparingHandle()

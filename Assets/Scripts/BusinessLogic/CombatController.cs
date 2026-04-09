@@ -95,7 +95,6 @@ namespace Assets.Scripts.BusinessLogic
         {
             if (CanCounterAttack)
             {
-                Debug.Log("CounterAttack!");
                 _weapon.Counterattack(_directionChangeFunction, _stateMachine.Direction);
                 return;
             }
@@ -139,6 +138,15 @@ namespace Assets.Scripts.BusinessLogic
                 _stateMachine.ChangeBlockState(BlockStates.Blocking);
                 _weapon.EndBlock();
             }
+        }
+
+        public void Restore()
+        {
+            _stateMachine.ChangeAttackState(AttackStates.Waiting);
+            _stateMachine.ChangeBlockState(BlockStates.Waiting);
+            _stateMachine.ChangeBattleState(ActorBattleState.Waiting);
+
+            CurrentHp = MaxHp;
         }
     }
 }

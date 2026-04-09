@@ -18,11 +18,9 @@ public class AttackHitbox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Hit");
         if (collision.tag == "Block")
         {
             GameObject me = this.gameObject.GetComponentInParent<ActorController>().gameObject;
-            Debug.Log("Block");
             _isblocked = true;
             ActorController actorController = collision.gameObject.GetComponentInParent<ActorController>();
 
@@ -35,7 +33,6 @@ public class AttackHitbox : MonoBehaviour
         }
         else if ((collision.tag == "Entity" || collision.tag == "Player") && !_isblocked)
         {
-            Debug.Log("Entity");
             var collisionBattleState = collision.gameObject.GetComponent<ActorController>().GetCurrentBattleState();
 
             collision.gameObject.GetComponent<ActorController>().CombatController.GetDamage(_damage);

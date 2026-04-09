@@ -17,6 +17,9 @@ namespace Assets.Scripts.Actions.Running
 
             if (_rb.linearVelocityX < 0.1f && _rb.linearVelocityY > -0.1f && _stateMachine.CurrentState == MachineActorStates.Moving)
             {
+                if (_animatorController == null) Debug.Log("AnController NULL");
+                if (_animatorController.Animator == null) Debug.Log("Animator NULL");
+
                 _stateMachine.ChangeState(MachineActorStates.Standing);
                 _animatorController.IsRunning = false;
             }

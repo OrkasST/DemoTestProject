@@ -34,8 +34,8 @@ namespace Assets.Scripts.Actions.Attack
 
         public void StartAttack()
         {
-            if (_stateMachine.CurrentAttackState != AttackStates.Recovering && _stateMachine.CurrentAttackState != AttackStates.Waiting) return;
-            if (_stateMachine.CurrentAttackState == AttackStates.Recovering) _coroutineCancelFunction(_currentAttack);
+            if (_stateMachine.CurrentAttackState != AttackStates.Waiting) return;
+            //if (_stateMachine.CurrentAttackState == AttackStates.Recovering) _coroutineCancelFunction(_currentAttack);
             _currentAttack = _startRoutine(AttackHandle());
         }
 

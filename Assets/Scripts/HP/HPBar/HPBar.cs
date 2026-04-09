@@ -4,24 +4,33 @@ using UnityEngine.UI;
 
 public class HPBar : MonoBehaviour
 {
-    [SerializeField] private GameObject _entity;
+    public GameObject Entity = null;
     private CombatController _entityCombatController;
     private Slider _slider;
+    [SerializeField] private RectTransform _smoothFillTransform;
 
-    void Start()
+    public void Initialize()
     {
-        _entityCombatController = _entity.GetComponent<ActorController>().CombatController;
-        _slider = GetComponent<Slider>();
+        if (Entity != null)
+        {
+            _entityCombatController = Entity.GetComponent<ActorController>().CombatController;
+            _slider = GetComponent<Slider>();
 
-        _slider.maxValue = _entityCombatController.MaxHp;
-        _slider.value = _entityCombatController.MaxHp;
+            _slider.maxValue = _entityCombatController.MaxHp;
+            _slider.value = _entityCombatController.MaxHp;
+        }
     }
 
     void Update()
     {
-        if (_entityCombatController.CurrentHp != _slider.value)
+        if (Entity != null && _entityCombatController.CurrentHp != _slider.value)
         {
             _slider.value = _entityCombatController.CurrentHp;
         }
+        if (_smoothFillTransform.anchorMax.x > _slider.value / _slider.maxValue)
+        {
+           _smoothFillTransform.anchorMax = new Vector2(_smoothFillTransform.anchorMax.x - 0.001f, _smoothFillTransform.anchorMax.y);
+        } else if (_slider.value == _slider.maxValue && _smoothFillTransform.anchorMax.x < 1)
+            _smoothFillTransform.anchorMax = new Vector2(1f, _smoothFillTransform.anchorMax.y);
     }
 }
